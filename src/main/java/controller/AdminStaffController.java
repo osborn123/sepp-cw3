@@ -1,4 +1,8 @@
 package controller;
 
-public class AdminStaffController {
+public class AdminStaffController extends StaffController{
+
+    private void redirectInquiry(){
+
+    }
 }

@@ -1,4 +1,4 @@
 package controller;
 
-public class Controller {
+abstract class Controller {
 }
