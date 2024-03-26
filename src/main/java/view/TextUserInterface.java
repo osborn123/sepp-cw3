@@ -1,5 +1,11 @@
 package view;
 
+import model.FAQ;
+import model.FAQSection;
+import model.Inquiry;
+import model.PageSearchResult;
+
+import java.util.Collection;
 import java.util.Scanner;
 
 public class TextUserInterface implements View {
@@ -45,22 +51,22 @@ public class TextUserInterface implements View {
     }
 
     @Override
-    public void displayFAQ(boolean bool) {
+    public void displayFAQ(FAQ faq, boolean bool) {
 
     }
 
     @Override
-    public void displayFAQSection(boolean bool) {
+    public void displayFAQSection(FAQSection faqSection, boolean bool) {
 
     }
 
     @Override
-    public void displayInquiry() {
+    public void displayInquiry(Inquiry inquiry) {
 
     }
 
     @Override
-    public void displaySearchResults() {
+    public void displaySearchResults(Collection<PageSearchResult> pageSearchResultCollection) {
 
     }
 }
