@@ -1,7 +1,8 @@
 package model;
 
 public class Inquiry {
-    private DateTime createdAt;
+    // private DateTime createdAt;
+    // noted line 4 because it causes errors
     private String inquirerEmail;
     private String subject;
     private String content;
