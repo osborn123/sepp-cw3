@@ -1,4 +1,4 @@
 package model;
 
-abstract class User {
+public class User {
 }

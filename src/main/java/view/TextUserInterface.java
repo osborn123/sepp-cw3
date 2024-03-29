@@ -1,6 +1,6 @@
 package view;
 
-import model.FAQ;
+// import model.FAQ;
 import model.FAQSection;
 import model.Inquiry;
 import model.PageSearchResult;
@@ -10,9 +10,15 @@ import java.util.Scanner;
 
 public class TextUserInterface implements View {
     private Scanner scanner;
+
+    public TextUserInterface() {
+        this.scanner = new Scanner(System.in);
+    }
+    
     @Override
     public String getInputString(String str) {
-        return null;
+        System.out.println(str);
+        return scanner.nextLine();
     }
 
     @Override
@@ -51,7 +57,7 @@ public class TextUserInterface implements View {
     }
 
     @Override
-    public void displayFAQ(FAQ faq, boolean bool) {
+    public void displayFAQ(FAQSection faq, boolean bool) { //Changed FAQ to FAQSection
 
     }
 
@@ -70,3 +76,4 @@ public class TextUserInterface implements View {
 
     }
 }
+

@@ -2,10 +2,19 @@ package model;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+// import java.util.HashSet;
 import java.util.Map;
 
 public class SharedContext {
+    public User getCurrentUser() {
+        // Return the current user, either Guest or AuthenticatedUser
+        return new Guest(); // Placeholder
+    }
+    
+    public FAQ getFAQ() {
+        // Return the FAQ object
+        return new FAQ();
+    }
     public static String ADMIN_STAFF_EMAIL;
     private Map<String, Collection<String>> faqTopicsUpdateSubscribers;
 
