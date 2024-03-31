@@ -1,7 +1,7 @@
 package model;
 
 public class Inquiry {
-    private DateTime createdAt;
+   // private DateTime createdAt;
     private String inquirerEmail;
     private String subject;
     private String content;

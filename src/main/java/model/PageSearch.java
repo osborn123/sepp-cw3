@@ -6,7 +6,7 @@ import org.apache.lucene.store.Directory;
 import java.util.Collection;
 
 public class PageSearch {
-    private standardAnalyzer analyzer;
+    //private standardAnalyzer analyzer;
     private Directory index;
 
     public PageSearch(Collection<Page> pageCollection){

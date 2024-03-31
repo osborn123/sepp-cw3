@@ -9,14 +9,20 @@ import java.util.Collection;
 import java.util.Scanner;
 
 public class TextUserInterface implements View {
-    private Scanner scanner;
+    private Scanner scanner = new Scanner(System.in);
     @Override
     public String getInputString(String str) {
-        return null;
+        System.out.println(str);
+        return scanner.nextLine();
     }
 
     @Override
     public boolean getYesNoInputString(String str) {
+        System.out.println(str);
+        String inp = scanner.nextLine();
+        if(inp.equals("Yes")) {
+            return true;
+        }
         return false;
     }
 
@@ -32,12 +38,12 @@ public class TextUserInterface implements View {
 
     @Override
     public void displayWarning(String str) {
-
+        System.out.println(str);
     }
 
     @Override
     public void displayError(String str) {
-
+        System.out.println(str);
     }
 
     @Override
