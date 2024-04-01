@@ -5,10 +5,11 @@ import java.util.Map;
 
 public class SharedContext {
     public static String ADMIN_STAFF_EMAIL;
+    public User currentUser;
     private Map<String, Collection<String>> faqTopicsUpdateSubscribers;
 
     public SharedContext() {
-
+        User currentUser = new Guest();
     }
     public void addPage(Page page){
 
@@ -20,6 +21,12 @@ public class SharedContext {
         return true;
     }
     public Collection<String> usersSubscribedToFAQTopic(String str1){
+        return null;
+    }
+    public void setCurrentUser(User user){
+        currentUser = user;
+    }
+    public Collection<Page> getPages(){
         return null;
     }
 

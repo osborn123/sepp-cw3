@@ -13,6 +13,7 @@ public class InquirerController extends Controller{
 
     }
     public void searchPages(){
+        String searchQuery = view.getInputString("Enter your search query: ");
 
     }
     public void contactStaff(){

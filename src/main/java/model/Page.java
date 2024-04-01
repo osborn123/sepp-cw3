@@ -4,7 +4,9 @@ public class Page {
     private String title;
     private String content;
     private boolean isPrivate;
-    public Page(String str1, String str2, boolean bool){
-
+    public Page(String title, String content, boolean isPrivate){
+        this.title = title;
+        this.content = content;
+        this.isPrivate = isPrivate;
     }
 }

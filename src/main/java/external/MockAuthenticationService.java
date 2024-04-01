@@ -60,7 +60,7 @@ public class MockAuthenticationService implements AuthenticationService {
             // Error message deliberately does not say it's the email that's wrong
             HashMap<String, String> errorObj = new HashMap<>();
             errorObj.put("error", "Wrong username or password");
-            return new JSONObject().toJSONString();
+            return new JSONObject().toJSONString(errorObj);
         }
 
         String registeredPassword = (String) user.get("password");
@@ -70,7 +70,7 @@ public class MockAuthenticationService implements AuthenticationService {
             // For this exercise, we use plaintext passwords for simplicity, but don't ever do this in production code!
             HashMap<String, String> errorObj = new HashMap<>();
             errorObj.put("error", "Wrong username or password");
-            return new JSONObject().toJSONString();
+            return new JSONObject().toJSONString(errorObj);
         }
 
         return user.toJSONString();

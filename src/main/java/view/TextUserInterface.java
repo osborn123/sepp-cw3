@@ -20,10 +20,13 @@ public class TextUserInterface implements View {
     public boolean getYesNoInputString(String str) {
         System.out.println(str);
         String inp = scanner.nextLine();
-        if(inp.equals("Yes")) {
+        if(inp.equals("yes") || inp.equals("Y")|| inp.equals("y")) {
             return true;
+        } else if (inp.equals("No") || inp.equals("N")|| inp.equals("n")) {
+            return false;
         }
-        return false;
+        System.out.println("Valid inputs are only 'Yes','Y','y','No','N','n'");
+        return getYesNoInputString(str);
     }
 
     @Override
@@ -33,7 +36,7 @@ public class TextUserInterface implements View {
 
     @Override
     public void displaySuccess(String str) {
-
+        System.out.println(str);
     }
 
     @Override
@@ -47,8 +50,8 @@ public class TextUserInterface implements View {
     }
 
     @Override
-    public void displayException(String str) {
-
+    public void displayException(String e) {
+        System.out.println(e);
     }
 
     @Override

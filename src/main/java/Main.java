@@ -16,6 +16,5 @@ public class Main {
         MockEmailService es = new MockEmailService();
         MenuController mc = new MenuController(sc, view,as,es);
         mc.mainMenu();
-
     }
 }
