@@ -130,12 +130,142 @@ public class AdminStaffController extends StaffController{
     private void addFAQItem(){
 
     }
-    public void viewAllPages(){
+    /**
+     * Displays all available pages to the user and allows them to view a specific page,
+     * add a new page, or exit the viewing interface.
+     */
+    public void viewAllPages() {
+        Map<String, Page> availablePages = sc.getPages();
 
-    }
-    public void manageInquiries(){
+        // Check if there are any pages to display
+        if (availablePages.isEmpty()) {
+            view.displayInfo("No pages currently available.");
+            return;
+        }
 
+        List<String> titles = new ArrayList<>(availablePages.keySet());
+
+        // Loop until the user decides to exit
+        while (true) {
+            // Display each available page title with an index
+            for (int i = 0; i < titles.size(); i++) {
+                view.displayInfo(i + ": " + titles.get(i));
+            }
+            // Provide options for adding a new page or exiting
+            view.displayInfo(titles.size() + ": Add a new page");
+            view.displayInfo((titles.size() + 1) + ": Exit");
+
+            try {
+                // Prompt the user for their choice
+                int choice = Integer.parseInt(view.getInputString("Select a page to view, add a new page, or exit:"));
+
+                if (choice == titles.size()) { // Option to add a new page
+                    addPage();
+                    // Optionally, break if you want to return to the menu after adding a page, or continue to refresh the list
+                    continue; // Refresh the list of pages in case a new page was added
+                } else if (choice == titles.size() + 1) { // Option to exit
+                    break;
+                } else if (choice >= 0 && choice < titles.size()) { // A valid page selection
+                    Page selectedPage = availablePages.get(titles.get(choice));
+                    // Display the selected page's title and content
+                    view.displayInfo("Title: " + selectedPage.getTitle());
+                    view.displayInfo("Content: " + selectedPage.getContent());
+                    view.displayDivider();
+                } else {
+                    // If the user's choice doesn't match any valid option
+                    view.displayError("Invalid selection. Please enter a number between 0 and " + (titles.size() + 1) + ".");
+                }
+            } catch (NumberFormatException e) {
+                // Handle cases where the input is not an integer
+                view.displayError("Invalid input. Please enter a number.");
+            }
+        }
     }
+
+    /**
+     * Allows the user to manage inquiries by listing all available inquiries,
+     * then providing options to view, respond to, or redirect an inquiry, or cancel the operation.
+     */
+    public void manageInquiries() {
+        ArrayList<Inquiry> inquiries = sc.getInquiries();
+
+        // Check if there are any inquiries to manage
+        if (inquiries.isEmpty()) {
+            view.displayInfo("No unanswered inquiries at this time.");
+            return;
+        }
+
+        // Display titles of all inquiries
+        Collection<String> inquiryTitles = getInquiryTitles(inquiries);
+        int index = 0;
+        for (String title : inquiryTitles) {
+            view.displayInfo(index + ": " + title);
+            index++;
+        }
+
+        // Get user selection for which inquiry to manage
+        int chosenIndex = getUserSelection(inquiries.size());
+
+        // If user selects valid inquiry, display it and provide options for next steps
+        if (chosenIndex != -1) {
+            Inquiry selectedInquiry = inquiries.get(chosenIndex);
+            view.displayInquiry(selectedInquiry);
+
+            manageSelectedInquiry(selectedInquiry);
+        }
+    }
+
+    /**
+     * Prompts the user for a selection and validates it.
+     *
+     * @param size The number of available inquiries.
+     * @return The index of the selected inquiry or -1 if the user cancels.
+     */
+    private int getUserSelection(int size) {
+        int chosenIndex;
+        while (true) {
+            try {
+                chosenIndex = Integer.parseInt(view.getInputString("Enter the number of the inquiry to view, or -1 to cancel: "));
+                if (chosenIndex == -1 || (chosenIndex >= 0 && chosenIndex < size)) {
+                    return chosenIndex;
+                } else {
+                    view.displayError("Invalid selection. Please enter a number between 0 and " + (size - 1) + " or -1 to cancel.");
+                }
+            } catch (NumberFormatException e) {
+                view.displayError("Invalid input. Please enter a number.");
+            }
+        }
+    }
+
+    /**
+     * Handles the selected inquiry by allowing the user to respond, redirect, or cancel.
+     *
+     * @param inquiry The selected inquiry to manage.
+     */
+    private void manageSelectedInquiry(Inquiry inquiry) {
+        int action;
+        while (true) {
+            try {
+                action = Integer.parseInt(view.getInputString("Enter 1 to respond, 2 to redirect, or -1 to cancel: "));
+                switch (action) {
+                    case 1:
+                        respondToInquiry(inquiry);
+                        return; // Exit after action is performed
+                    case 2:
+                        redirectInquiry(inquiry);
+                        return; // Exit after action is performed
+                    case -1:
+                        return; // Exit if user chooses to cancel
+                    default:
+                        view.displayError("Invalid action. Please enter 1, 2, or -1.");
+                        break; // Invalid action, ask again
+                }
+            } catch (NumberFormatException e) {
+                view.displayError("Invalid input. Please enter a number.");
+            }
+        }
+    }
+
     private void redirectInquiry(Inquiry inquiry){// Prompt the user to enter the email address to which the inquiry should be redirected
         String receiverEmail = view.getInputString("What email would you like to redirect to?");
 
