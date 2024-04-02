@@ -1,5 +1,9 @@
 package model;
 
-public class User {
-    public String role = "";
+public abstract class User {
+    private String role;
+    private String email;
+    public String getRole() {
+        return role;
+    }
 }

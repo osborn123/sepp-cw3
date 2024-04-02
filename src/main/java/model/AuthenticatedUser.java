@@ -13,4 +13,7 @@ public class AuthenticatedUser extends User {
         this.email = email;
         this.role = role;
     }
+    public String getRole() {
+        return role;
+    }
 }

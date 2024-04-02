@@ -39,8 +39,7 @@ public class SharedContext {
     }
     public User getCurrentUser() {
         // Return the current user, either Guest or AuthenticatedUser
-        if (currentUser.equals(new Guest())){
-            currentUser.role = "";
+        if (currentUser instanceof Guest){
             return currentUser;
         }
         return currentUser;

@@ -29,14 +29,6 @@ public class GuestController extends Controller{
                 AuthenticatedUser currentUser = new AuthenticatedUser(email, role);
                 view.displaySuccess("successfully logged in");
                 sc.setCurrentUser(currentUser);
-                MenuController mc = new MenuController(sc,view,as,es);
-                if (role.equals("AdminStaff")){
-                } else if (role.equals("TeachingStaff")) {
-                }
-                else{ //Already checked valid role
-                    String inpString = "\nPress 1 to logout\nPress 2 to consult the FAQ\nPress 3 to consult the webpages\nPress 4 to consult a member of staff";
-                    view.getInputString(inpString);
-                }
             }
             catch (IllegalArgumentException e){
                 view.displayException(String.valueOf(e));
