@@ -2,9 +2,13 @@ package controller;
 
 import external.AuthenticationService;
 import external.EmailService;
-import model.SharedContext;
+import model.*;
 import view.View;
 
+import java.io.IOException;
+import java.util.*;
+
+import org.apache.lucene.queryparser.classic.ParseException;
 public class InquirerController extends Controller{
 
     private SharedContext sc;
@@ -20,13 +24,63 @@ public class InquirerController extends Controller{
         this.as = as;
         this.es = es;
     }
-    public void consultFAQ(){
+    public void searchPages() {
+        // Prompt the user for a search query
+        String searchQuery = view.getInputString("Enter your search query: ");
+
+        // Retrieve all pages available in the shared context
+        Map<String, Page> availablePages = new HashMap<>(sc.getPages());
+
+        // Check the current user's access rights
+        User currentUser = sc.getCurrentUser();
+
+        // If the current user is a guest or not logged in, filter out private pages
+        if (currentUser instanceof Guest || currentUser == null) {
+            filterPrivatePages(availablePages);
+        }
+
+        // Attempt to perform the search operation
+        try {
+            PageSearch search = new PageSearch(availablePages);
+            Collection<PageSearchResult> results = search.search(searchQuery);
+
+            // Display the search results, ensuring there are at most 4 results due to internal logic
+            view.displayDivider();
+            view.displaySearchResults(results);
+            view.displayDivider();
+        } catch (IOException ioException) {
+            view.displayException("IO Error during search: " + ioException.getMessage());
+        } catch (ParseException parseException) {
+            view.displayException("Parse Error during search: " + parseException.getMessage());
+        }
+    }
+
+    /**
+     * Filters out private pages from a map of pages, modifying the original map.
+     *
+     * @param pages The map of pages to filter.
+     */
+    private void filterPrivatePages(Map<String, Page> pages) {
+        // Use Iterator to safely remove entries while iterating
+        for (Iterator<Map.Entry<String, Page>> it = pages.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<String, Page> entry = it.next();
+            if (entry.getValue().isPrivate()) {
+                it.remove(); // Remove private pages from the list
+            }
+        }
 
     }
-    public void searchPages(){
 
-    }
     public void contactStaff(){
+
+
+
+
+
+
+
+
+
 
     }
     public void requestFAQUpdates(String userEmail, String topic){
