@@ -2,36 +2,24 @@ package model;
 
 import java.util.Collection;
 import java.util.HashMap;
-// import java.util.HashSet;
 import java.util.Map;
 
 public class SharedContext {
-    public User getCurrentUser() {
-        // Return the current user, either Guest or AuthenticatedUser
-        return new Guest(); // Placeholder
-    }
-    
-    public FAQ getFAQ() {
-        // Return the FAQ object
-        return new FAQ();
-    }
     public static String ADMIN_STAFF_EMAIL;
+    private User currentUser;
     private Map<String, Collection<String>> faqTopicsUpdateSubscribers;
 
     public SharedContext() {
         faqTopicsUpdateSubscribers = new HashMap<>();
+        User currentUser = new Guest();
     }
-
     public void addPage(Page page){
-        
-    }
 
+    }
     public boolean registerForFAQUpdates(String userEmail, String topic){
-        
-        return true; 
-    }
 
-    public boolean unregisterForFAQUpdates(String userEmail, String topic){
+        return true;
+    }    public boolean unregisterForFAQUpdates(String userEmail, String topic){
         // Check if the topic exists in the map
         if (faqTopicsUpdateSubscribers.containsKey(topic)) {
             Collection<String> subscribers = faqTopicsUpdateSubscribers.get(topic);
@@ -49,9 +37,23 @@ public class SharedContext {
         // If the topic does not exist or the userEmail was not found, return false
         return false;
     }
-
+    public User getCurrentUser() {
+        // Return the current user, either Guest or AuthenticatedUser
+        return currentUser;
+    }
     public Collection<String> usersSubscribedToFAQTopic(String topic){
         // Implementation for retrieving users subscribed to a FAQ topic
-        return null; 
+        return null;
     }
+    public void setCurrentUser(User user){
+        currentUser = user;
+    }
+    public Collection<Page> getPages(){
+        return null;
+    }
+    public FAQ getFAQ() {
+        // Return the FAQ object
+        return new FAQ();
+    }
+
 }

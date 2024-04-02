@@ -2,7 +2,10 @@ package controller;
 
 import external.AuthenticationService;
 import external.EmailService;
+import model.AuthenticatedUser;
 import model.SharedContext;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import view.View;
 
 public class GuestController extends Controller{
@@ -10,6 +13,33 @@ public class GuestController extends Controller{
         super(sc, view, as, es);
     }
     public void login(){
+        String email = view.getInputString("Enter your username: ");
+        String password = view.getInputString("Enter your password: ");
 
+        String response = as.login(email, password);
+        JSONObject json = (JSONObject) JSONValue.parse(response);
+        String err = (String)json.get("error");
+        if(json.isEmpty()){
+            view.displayError(err);
+            login();
+        }
+        else{
+            String role = (String)json.get("role");
+            try {
+                AuthenticatedUser currentUser = new AuthenticatedUser(email, role);
+                view.displaySuccess("successfully logged in");
+                sc.setCurrentUser(currentUser);
+                MenuController mc = new MenuController(sc,view,as,es);
+                if (role.equals("AdminStaff")){
+                } else if (role.equals("TeachingStaff")) {
+                }
+                else{
+
+                }
+            }
+            catch (IllegalArgumentException e){
+                view.displayException(String.valueOf(e));
+            }
+        }
     }
 }
