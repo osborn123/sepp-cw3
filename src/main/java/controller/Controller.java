@@ -9,6 +9,7 @@ import java.util.Collection;
 
 abstract class Controller {
     public SharedContext sc;
+    protected MenuController mc;
     public View view;
     public EmailService es;
     public AuthenticationService as;

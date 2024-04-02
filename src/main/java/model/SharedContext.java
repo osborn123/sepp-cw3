@@ -51,7 +51,7 @@ public class SharedContext {
     public void setCurrentUser(User user){
         currentUser = user;
     }
-    public Collection<Page> getPages(){
+    public Map<String, Page> getPages(){
         return null;
     }
     public FAQ getFAQ() {
