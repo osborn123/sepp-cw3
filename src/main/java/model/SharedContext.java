@@ -1,11 +1,20 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SharedContext {
-    public static String ADMIN_STAFF_EMAIL;
+    public ArrayList<Inquiry> getInquiries() {
+        return inquiries;
+    }
+    private ArrayList<Inquiry> inquiries = new ArrayList<>();
+    public static String ADMIN_STAFF_EMAIL = "admins@hindeburg.ac.uk";
+    public static String getAdminStaffEmail() {
+        return ADMIN_STAFF_EMAIL;
+    }
+
     private User currentUser = new Guest();
     private Map<String, Collection<String>> faqTopicsUpdateSubscribers;
 

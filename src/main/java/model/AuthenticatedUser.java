@@ -16,4 +16,10 @@ public class AuthenticatedUser extends User {
     public String getRole() {
         return role;
     }
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String role) {
+        this.email = email;
+    }
 }

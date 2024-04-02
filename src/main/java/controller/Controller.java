@@ -20,7 +20,7 @@ abstract class Controller {
         this.as = as;
         this.es = es;
     }
-    protected <T> int selectfromMenu(Collection<T> collection, String str){
-        return 0;
+    public void setMenuController(MenuController menuController) {
+        this.mc = menuController;
     }
 }
