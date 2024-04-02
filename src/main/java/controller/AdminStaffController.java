@@ -136,7 +136,29 @@ public class AdminStaffController extends StaffController{
     public void manageInquiries(){
 
     }
-    private void redirectInquiry(){
+    private void redirectInquiry(Inquiry inquiry){// Prompt the user to enter the email address to which the inquiry should be redirected
+        String receiverEmail = view.getInputString("What email would you like to redirect to?");
 
+        // Update the inquiry's assigned handler to the new email address
+        inquiry.setAssignedTo(receiverEmail);
+
+        // Compose and send a notification email to the new handler
+        int status = es.sendEmail(
+                SharedContext.ADMIN_STAFF_EMAIL, // From the admin staff's email
+                receiverEmail, // To the new handler's email
+                "Inquiry: " + inquiry.getSubject() + " sent by " + inquiry.getInquirerEmail(), // Email subject
+                "Please log in to the Self Service Portal to review the inquiry" // Email body
+        );
+
+        // Check the status of the email send operation and display a message accordingly
+        if (status == EmailService.STATUS_SUCCESS) {
+            // If the email was successfully sent, inform the user
+            view.displaySuccess("Inquiry successfully redirected and email notification sent.");
+        } else {
+            // If there was an issue sending the email, inform the user
+            view.displayWarning("Failed to redirect the inquiry due to an email sending error.");
+        }
     }
+
 }
+

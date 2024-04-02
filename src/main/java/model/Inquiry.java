@@ -1,37 +1,48 @@
 package model;
 
+import view.View;
+
 import java.time.LocalDateTime; //imported from java.time package for LocalDateTime
 
 public class Inquiry {
-    private LocalDateTime createdAt; 
-    private String inquirerEmail;
-    private String subject;
-    private String content;
-    private String assignedTo;
-    public Inquiry(String inquirerEmail, String subject, String content){
-        this.inquirerEmail = inquirerEmail;
-        this.subject = subject;
-        this.content = content;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
+    private LocalDateTime createdAt;
 
     public String getInquirerEmail() {
-        return this.inquirerEmail;
+        return inquirerEmail;
     }
+
+    private String inquirerEmail;
 
     public String getSubject() {
-        return this.subject;
+        return subject;
     }
+
+    private String subject;
 
     public String getContent() {
-        return this.content;
+        return content;
     }
 
+    private String content;
+
     public String getAssignedTo() {
-        return this.assignedTo;
+        return assignedTo;
+    }
+
+    public void setAssignedTo(String assignedTo) {
+        this.assignedTo = assignedTo;
+    }
+
+    private String assignedTo;
+    private SharedContext sharedContext;
+    private View view;
+
+    public Inquiry(String subject, String content, String inquirerEmail){
+        this.createdAt = LocalDateTime.now(); //Contigent on localdatetime being the datatype
+        this.subject = subject;
+        this.content = content;
+        this.inquirerEmail = inquirerEmail;
+        this.assignedTo = null;
     }
 }
 
