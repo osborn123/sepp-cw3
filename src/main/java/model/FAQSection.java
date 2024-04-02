@@ -1,15 +1,20 @@
 package model;
+
 import java.util.ArrayList;
 import java.util.Collection;
+
+/**
+ * Represents a section of a Frequently Asked Questions (FAQ) list.
+ * Each section can contain a list of questions (as FAQItem objects) and can be nested within other sections.
+ */
 public class FAQSection {
-    private String topic; // The topic or title of the FAQ section
-    private Collection<FAQItem> items; // A collection of FAQ items within this section
-    private Collection<FAQSection> subsections; // Subsections of this FAQ section
-    private FAQSection parent; // The parent section of this FAQ section, if any
+    private String topic; // The title or main topic of this FAQ section.
+    private FAQSection parent; // The parent section, null if this is a top-level section.
+    private Collection<FAQItem> items; // The list of FAQ items (questions and answers) in this section.
+    private Collection<FAQSection> subsections; // Nested subsections within this FAQ section.
 
     /**
-     * Constructs an FAQSection with the specified topic.
-     * Initializes empty collections for FAQ items and subsections.
+     * Constructs an FAQSection with a specified topic.
      *
      * @param topic The topic or title of the FAQ section.
      */
@@ -17,49 +22,47 @@ public class FAQSection {
         this.topic = topic;
         this.items = new ArrayList<>();
         this.subsections = new ArrayList<>();
-        this.parent = null; // Initially, this section has no parent
+        this.parent = null; // Initially, there is no parent until this section is added as a subsection.
     }
 
     /**
-     * Adds a subsection to this FAQ section.
-     * Sets this section as the parent of the added subsection.
+     * Adds a subsection to this FAQ section. Automatically sets this section as the parent of the added subsection.
      *
-     * @param section The subsection to add.
+     * @param section The FAQSection to be added as a subsection.
      */
     public void addSubsection(FAQSection section) {
-        section.setParent(this); // Set this section as the parent
+        section.setParent(this);
         subsections.add(section);
     }
 
     /**
-     * Sets the parent FAQ section of this section.
-     * This is typically called when this section is added as a subsection of another.
+     * Sets the parent of this FAQ section. This is typically called internally when this section is added as a subsection.
      *
-     * @param parent The parent FAQ section.
+     * @param parent The parent FAQSection.
      */
     public void setParent(FAQSection parent) {
         this.parent = parent;
     }
 
     /**
-     * Adds an FAQ item to this section.
+     * Adds an FAQ item (question and answer) to this section.
      *
-     * @param question The question for the FAQ item.
-     * @param answer The answer for the FAQ item.
+     * @param question The question to add.
+     * @param answer The answer to the question.
      */
     public void addItem(String question, String answer) {
         items.add(new FAQItem(question, answer));
     }
 
-    // Getters for accessing private fields
+    // Standard getters for the class properties.
     public String getTopic() { return topic; }
     public Collection<FAQItem> getItems() { return items; }
     public Collection<FAQSection> getSubsections() { return subsections; }
     public FAQSection getParent() { return parent; }
 
     /**
-     * Returns a string representation of the FAQ section, including its topic, FAQ items,
-     * and any subsections. Items and subsections are indented for better readability.
+     * Generates a string representation of this FAQ section, including its topic, items, and any subsections.
+     * This is particularly useful for debugging or displaying the structure in a console application.
      *
      * @return A string representation of the FAQ section.
      */
@@ -67,20 +70,16 @@ public class FAQSection {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(topic).append("\n");
-
-        // Append items with indentation
         if (!items.isEmpty()) {
             sb.append("Items:\n");
             for (FAQItem item : items) {
                 sb.append("  ").append(item).append("\n");
             }
         }
-
-        // Append subsections with indentation
         if (!subsections.isEmpty()) {
             sb.append("Subsections:\n");
             for (FAQSection section : subsections) {
-                // Recursively calls toString on subsections for a nested structure
+                // Recursive toString call to include subsections' information.
                 sb.append("  ").append(section).append("\n");
             }
         }
