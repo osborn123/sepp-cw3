@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class SharedContext {
     public static String ADMIN_STAFF_EMAIL;
-    private User currentUser;
+    private User currentUser = new Guest();
     private Map<String, Collection<String>> faqTopicsUpdateSubscribers;
 
     public SharedContext() {
@@ -39,6 +39,10 @@ public class SharedContext {
     }
     public User getCurrentUser() {
         // Return the current user, either Guest or AuthenticatedUser
+        if (currentUser.equals(new Guest())){
+            currentUser.role = "";
+            return currentUser;
+        }
         return currentUser;
     }
     public Collection<String> usersSubscribedToFAQTopic(String topic){

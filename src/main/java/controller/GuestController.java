@@ -33,8 +33,9 @@ public class GuestController extends Controller{
                 if (role.equals("AdminStaff")){
                 } else if (role.equals("TeachingStaff")) {
                 }
-                else{
-
+                else{ //Already checked valid role
+                    String inpString = "\nPress 1 to logout\nPress 2 to consult the FAQ\nPress 3 to consult the webpages\nPress 4 to consult a member of staff";
+                    view.getInputString(inpString);
                 }
             }
             catch (IllegalArgumentException e){

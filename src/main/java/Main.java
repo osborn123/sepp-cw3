@@ -14,7 +14,7 @@ public class Main {
         TextUserInterface view = new TextUserInterface();
         MockAuthenticationService as = new MockAuthenticationService();
         MockEmailService es = new MockEmailService();
-        MenuController mc = new MenuController(sc, view,as,es);
+        MenuController mc = new MenuController(sc,view,as,es);
         mc.mainMenu();
     }
 }
