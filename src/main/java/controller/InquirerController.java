@@ -24,6 +24,24 @@ public class InquirerController extends Controller{
         this.as = as;
         this.es = es;
     }
+
+    public void consultFAQ(){
+
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
     public void searchPages() {
         // Prompt the user for a search query
         String searchQuery = view.getInputString("Enter your search query: ");
@@ -110,16 +128,6 @@ public class InquirerController extends Controller{
             // If there was an issue sending the email, warn the user
             view.displayWarning("Added Inquiry " + inquiry.getSubject() + " but failed to send email notification!");
         }
-
-
-
-
-
-
-
-
-
-
     }
     public void requestFAQUpdates(String userEmail, String topic){
         // Prompts user for email if not provided

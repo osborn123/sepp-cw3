@@ -13,43 +13,34 @@ import java.util.Collection;
 public class TeachingStaffController extends StaffController {
 
 
-    public TeachingStaffController(SharedContext sharedContext, View view,
-                           AuthenticationService authenticationService,
-                           EmailService emailService) {
-        super(sharedContext, view, authenticationService, emailService);
+    protected TeachingStaffController(SharedContext sc, View view, AuthenticationService as, EmailService es) {
+        super(sc, view, as, es);
     }
+    public void manageReceivedInquiries() {
+        // Retrieve the titles of all inquiries assigned to the user
+        Collection<String> inquiryTitles = getInquiryTitles(sc.getInquiries());
 
-
-    protected Collection<String> getInquiryTitles(Collection<Inquiry> inquiries) {
-        ArrayList<String> inquiryTitles = new ArrayList<>();
-        for (Inquiry inquiry : inquiries) {
-            inquiryTitles.add(inquiry.getSubject());
+        // Check if there are any inquiries to manage
+        if (inquiryTitles.isEmpty()) {
+            view.displayInfo("No inquiries to manage.");
+            return; // Exit if there are no inquiries
         }
-        return inquiryTitles;
-    }
 
+        // Prompt the user to select an inquiry from the list
+        int selectedOption = selectFromMenu(inquiryTitles, "Please select an inquiry to manage: ");
 
-    protected void respondToInquiry(Inquiry inquiry) {
-        // Prompt the staff member for their response to the inquiry
-        String answer = view.getInputString("What is your response to the inquiry?");
-
-        // Retrieve the current user's role and email for use in the email response
-        AuthenticatedUser currentUser = (AuthenticatedUser) sc.getCurrentUser();
-        String role = currentUser.getRole();
-        String senderEmail = currentUser.getEmail();
-
-        // Attempt to send the email response
-        int status = es.sendEmail(
-                senderEmail, inquiry.getInquirerEmail(),
-                "Subject: Answer to " + inquiry.getSubject() + " inquiry",
-                "Content: " + answer);
-
-        // Check if the email was successfully sent and provide feedback accordingly
-        if (status == EmailService.STATUS_SUCCESS) {
-            view.displaySuccess("Email Sent. Inquiry answered!");
-            sc.getInquiries().remove(inquiry); // Remove the inquiry upon successful response
-        } else {
-            view.displayWarning("Failed to send the email. Please try again later.");
+        // Handle the case where the user chooses to exit without making a selection
+        if (selectedOption == -1) {
+            return; // Exit the method
         }
+
+        // Retrieve the selected inquiry based on the user's choice
+        // Note: This approach assumes the order of inquiries in the collection matches the displayed list
+        Inquiry selectedInquiry = new ArrayList<>(sc.getInquiries()).get(selectedOption);
+
+        // Prompt the user to respond to the selected inquiry
+        respondToInquiry(selectedInquiry);
     }
+
+
 }

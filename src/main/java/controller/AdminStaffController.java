@@ -124,9 +124,16 @@ public class AdminStaffController extends StaffController{
         }
 
     }
+
+    //todo
     public void manageFAQ(){
 
+
+
+
     }
+
+    //todo
     private void addFAQItem(){
 
     }
