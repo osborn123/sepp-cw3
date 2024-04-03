@@ -9,48 +9,90 @@ public class MenuController extends Controller {
     public MenuController(SharedContext sc, View view, AuthenticationService as, EmailService es) {
         super(sc, view, as, es);
     }
+    private void invalidNum(){
+        view.displayError("Please enter a valid integer");
+        mainMenu();
+    }
     public void mainMenu(){
         String welcomeStr = "Welcome to the kiosk!\n";
         if (handleGuestMainMenu()){
             welcomeStr += LOGIN_string + FAQ_string + WEBPAGE_string + CONTACT_string;
             String inp = view.getInputString(welcomeStr);
-            if (inp.equals(GuestMainMenuOption.LOGIN.getString())){
+            if (inp.equals(GuestMainMenuOption.LOGIN.getString())) {
                 GuestController controller = new GuestController(sc, view, as, es);
                 controller.login();
                 mainMenu(); //Loop back with main menu for logged in user
-            } else if (inp.equals("2")) {
-
-            } else if (inp.equals("3")) {
-
-            } else if (inp.equals("4")) {
-
-            } else{
-                view.displayError("Please enter a valid integer");
-                mainMenu();
+            }
+            else{
+                InquirerController ic = new InquirerController(sc, view, as, es);
+                if (inp.equals(GuestMainMenuOption.CONSULT_FAQ.getString())) {
+                    ic.consultFAQ();
+                } else if (inp.equals(GuestMainMenuOption.SEARCH_PAGES.getString())) {
+                    ic.searchPages();
+                } else if (inp.equals(GuestMainMenuOption.CONTACT_STAFF.getString())) {
+                    ic.contactStaff();
+                } else {
+                    invalidNum();
+                }
             }
         } else if (handleStudentMainMenu()){
             welcomeStr += LOGOUT_string + FAQ_string + WEBPAGE_string + CONTACT_string;
             String inp = view.getInputString(welcomeStr);
             if (inp.equals(StudentMainMenuOption.LOGOUT.getString())) {
-                GuestController controller = new GuestController(sc, view, as, es);
                 sc.setCurrentUser(new Guest());
                 mainMenu(); //Loop back with main menu for logged out user
+            } else {
+                InquirerController ic = new InquirerController(sc, view, as, es);
+                if (inp.equals(StudentMainMenuOption.CONSULT_FAQ.getString())) {
+                    ic.consultFAQ();
+                }
+                else if (inp.equals(StudentMainMenuOption.SEARCH_PAGES)) {
+                    ic.searchPages();
+                }
+                else  if (inp.equals(StudentMainMenuOption.CONTACT_STAFF)) {
+                    ic.contactStaff();
+                }
+                else{
+                    invalidNum();
+                }
             }
         } else if (handleAdminStaffMainMenu()) {
             welcomeStr += LOGOUT_string + MANAGEQUERIES_string + ADDPAGE_string + SEE_ALL_PAGES_string + MANAGEFAQ_string;
             String inp = view.getInputString(welcomeStr);
             if (inp.equals(AdminStaffMainMenuOption.LOGOUT.getString())) {
-                GuestController controller = new GuestController(sc, view, as, es);
                 sc.setCurrentUser(new Guest());
                 mainMenu(); //Loop back with main menu for logged out user
             }
+            else{
+                AdminStaffController asc = new AdminStaffController(sc,view,as,es);
+                if (inp.equals(AdminStaffMainMenuOption.MANAGE_QUERIES.getString())) {
+                    asc.manageInquiries();
+                }
+                else if(inp.equals(AdminStaffMainMenuOption.ADD_PAGE.getString())) {
+                    asc.addPage();
+                }
+                else if (inp.equals(AdminStaffMainMenuOption.SEE_ALL_PAGES.getString())) {
+                    asc.viewAllPages();
+                }
+                else if (inp.equals(AdminStaffMainMenuOption.MANAGE_FAQ.getString())) {
+                    asc.manageFAQ();
+                }
+                else {
+                    invalidNum();
+                }
+        }
         } else if (handleTeachingStaffMainMenu()) {
             welcomeStr += LOGOUT_string + MRQ_string;
             String inp = view.getInputString(welcomeStr);
             if (inp.equals(TeachingStaffMainMenuOption.LOGOUT.getString())) {
-                GuestController controller = new GuestController(sc, view, as, es);
                 sc.setCurrentUser(new Guest());
                 mainMenu(); //Loop back with main menu for logged out user
+            } else if (inp.equals(TeachingStaffMainMenuOption.MANAGE_RECEIVED_QUERIES)) {
+                TeachingStaffController tsc = new TeachingStaffController(sc,view,as,es);
+                tsc.manageReceivedInquiries();
+            }
+            else{
+                invalidNum();
             }
         }
         else {
@@ -91,7 +133,7 @@ public class MenuController extends Controller {
     private static final String ADDPAGE_string = "Press 3 to add a page\n";
     private static final String SEE_ALL_PAGES_string = "Press 4 to see all pages\n";
     private static final String MANAGEFAQ_string = "Press 5 to manage FAQ";
-    enum GuestMainMenuOption{LOGIN("1"), CONSULT_FAQ("2");
+    enum GuestMainMenuOption{LOGIN("1"), CONSULT_FAQ("2"), SEARCH_PAGES("3"), CONTACT_STAFF("4");
         private String text;
         private GuestMainMenuOption(String text) {
             this.text = text;
