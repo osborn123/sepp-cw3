@@ -38,7 +38,6 @@ public class TestMockAuthenticationService {
     @Test
     @DisplayName("Testing incorrect username and correct password for failure")
     void testLoginFailureIncorrectUsername() throws Exception {
-        // Assuming "nonExistingUser" does not exist in the MockUserDataGroups4.json
         String result = authService.login("nonExistingUser", "anyPassword");
         JSONParser parser = new JSONParser();
         JSONObject resultObj = (JSONObject) parser.parse(result);
