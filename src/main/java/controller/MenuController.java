@@ -44,10 +44,10 @@ public class MenuController extends Controller {
                 if (inp.equals(StudentMainMenuOption.CONSULT_FAQ.getString())) {
                     ic.consultFAQ();
                 }
-                else if (inp.equals(StudentMainMenuOption.SEARCH_PAGES)) {
+                else if (inp.equals(StudentMainMenuOption.SEARCH_PAGES.getString())) {
                     ic.searchPages();
                 }
-                else  if (inp.equals(StudentMainMenuOption.CONTACT_STAFF)) {
+                else  if (inp.equals(StudentMainMenuOption.CONTACT_STAFF.getString())) {
                     ic.contactStaff();
                 }
                 else{
