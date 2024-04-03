@@ -72,6 +72,44 @@ public class InquirerController extends Controller{
     }
 
     public void contactStaff(){
+        String subject = view.getInputString("What is the subject of your inquiry?");
+        String content = view.getInputString("What is the content of your inquiry");
+        String email = null;
+        // Check if the current user is authenticated
+        if (sc.getCurrentUser() instanceof AuthenticatedUser) {
+            // Cast the user to AuthenticatedUser to access email
+            AuthenticatedUser currentUser = (AuthenticatedUser) sc.getCurrentUser();
+            email = currentUser.getEmail();
+        } else {
+            // If not authenticated, prompt the user to enter their email
+            email = view.getInputString("Enter your email:");
+        }
+
+// Create a new Inquiry object with the provided subject, content, and email
+        Inquiry inquiry = new Inquiry(subject, content, email);
+
+// Add the inquiry to the shared context
+        sc.getInquiries().add(inquiry);
+
+// Notify the user that the inquiry has been sent
+        view.displaySuccess("Inquiry sent");
+
+// Attempt to send an email notification about the new inquiry
+        int status = es.sendEmail(
+                email,
+                SharedContext.getAdminStaffEmail(),
+                "New Inquiry subject: " + inquiry.getSubject(),
+                "Please login to the self-service portal to review inquiry\nInquiry: " + inquiry.getContent()
+        );
+
+// Check the result of the email sending attempt
+        if (status == EmailService.STATUS_SUCCESS) {
+            // If the email was successfully sent, notify the user
+            view.displaySuccess("Inquiry Sent " + inquiry.getSubject());
+        } else {
+            // If there was an issue sending the email, warn the user
+            view.displayWarning("Added Inquiry " + inquiry.getSubject() + " but failed to send email notification!");
+        }
 
 
 
