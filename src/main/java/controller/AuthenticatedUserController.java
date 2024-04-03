@@ -14,6 +14,6 @@ public class AuthenticatedUserController extends Controller{
     public void logout() {
         view.displayError("Logout successful!");
         sc.setCurrentUser(null);
-        mc.mainMenu();
+
     }
 }

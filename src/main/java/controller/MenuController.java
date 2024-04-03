@@ -2,166 +2,169 @@ package controller;
 
 import external.AuthenticationService;
 import external.EmailService;
-import model.Guest;
+import model.AuthenticatedUser;
 import model.SharedContext;
+import model.User;
 import view.View;
+
+import java.io.IOException;
+import java.util.List;
+
 public class MenuController extends Controller {
-    public MenuController(SharedContext sc, View view, AuthenticationService as, EmailService es) {
-        super(sc, view, as, es);
+    // enums
+    public enum GuestMainMenuOption {
+        LOGIN,
+        CONSULT_FAQ,
+        SEARCH_PAGES,
+        CONTACT_STAFF
     }
-    private void invalidNum(){
-        view.displayError("Please enter a valid integer");
-        mainMenu();
+
+    public enum StudentMainMenuOption {
+        LOGOUT,
+        CONSULT_FAQ,
+        SEARCH_PAGES,
+        CONTACT_STAFF
     }
-    public void mainMenu(){
-        String welcomeStr = "";
-        if (handleGuestMainMenu()){
-            welcomeStr += LOGIN_string + FAQ_string + WEBPAGE_string + CONTACT_string;
-            String inp = view.getInputString(welcomeStr);
-            if (inp.equals(GuestMainMenuOption.LOGIN.getString())) {
-                GuestController controller = new GuestController(sc, view, as, es);
-                controller.login();
-            }
-            else{
-                InquirerController ic = new InquirerController(sc, view, as, es);
-                if (inp.equals(GuestMainMenuOption.CONSULT_FAQ.getString())) {
-                    ic.consultFAQ();
-                } else if (inp.equals(GuestMainMenuOption.SEARCH_PAGES.getString())) {
-                    ic.searchPages();
-                } else if (inp.equals(GuestMainMenuOption.CONTACT_STAFF.getString())) {
-                    ic.contactStaff();
-                } else {
-                    invalidNum();
-                }
-            }
-        } else if (handleStudentMainMenu()){
-            welcomeStr += LOGOUT_string + FAQ_string + WEBPAGE_string + CONTACT_string;
-            String inp = view.getInputString(welcomeStr);
-            if (inp.equals(StudentMainMenuOption.LOGOUT.getString())) {
-                sc.setCurrentUser(new Guest());
+
+    public enum TeachingStaffMainMenuOption {
+        LOGOUT,
+        MANAGE_RECEIVED_QUERIES
+    }
+
+    public enum AdminStaffMainMenuOption {
+        LOGOUT,
+        MANAGE_QUERIES,
+        ADD_PAGE,
+        SEE_ALL_PAGES,
+        MANAGE_FAQ
+    }
+
+
+
+    private InquirerController inquirerController;
+    private AdminStaffController adminStaffController;
+    private TeachingStaffController teachingStaffController;
+    private GuestController guestController;
+    private AuthenticatedUserController authenticatedUserController;
+    private StaffController staffController;
+
+    public MenuController(SharedContext sharedContext, View view, AuthenticationService authenticationService,
+                          EmailService emailService){
+        super(sharedContext, view, authenticationService, emailService);
+        inquirerController = new InquirerController(sharedContext, view, authenticationService, emailService);
+        adminStaffController = new AdminStaffController(sharedContext, view, authenticationService, emailService);
+        teachingStaffController = new TeachingStaffController(sharedContext, view, authenticationService, emailService);
+        guestController = new GuestController(sharedContext, view, authenticationService, emailService);
+        authenticatedUserController = new AuthenticatedUserController(sharedContext, view, authenticationService,
+                emailService);
+    }
+
+
+    public void mainMenu() throws IOException {
+        User currentUser = sc.getCurrentUser();
+        boolean res = true; // A flag to determine whether to return to the main menu
+
+        if (currentUser instanceof model.Guest) {
+            // Handle the guest main menu options
+            res = handleGuestMainMenu();
+        } else if (currentUser instanceof AuthenticatedUser) {
+            // Cast the current user to AuthenticatedUser for role checking
+            AuthenticatedUser authenticatedUser = (AuthenticatedUser) currentUser;
+            String role = authenticatedUser.getRole();
+
+            // Handle main menu options based on the user's role
+            if ("Student".equals(role)) {
+                res = handleStudentMainMenu();
+            } else if ("TeachingStaff".equals(role)) {
+                res = handleTeachingStaffMainMenu();
+            } else if ("AdminStaff".equals(role)) {
+                res = handleAdminStaffMainMenu();
             } else {
-                InquirerController ic = new InquirerController(sc, view, as, es);
-                if (inp.equals(StudentMainMenuOption.CONSULT_FAQ.getString())) {
-                    ic.consultFAQ();
-                }
-                else if (inp.equals(StudentMainMenuOption.SEARCH_PAGES.getString())) {
-                    ic.searchPages();
-                }
-                else  if (inp.equals(StudentMainMenuOption.CONTACT_STAFF.getString())) {
-                    ic.contactStaff();
-                }
-                else{
-                    invalidNum();
-                }
+                // Display an error if the role is unrecognized
+                view.displayError("Unknown role: " + role);
             }
-        } else if (handleAdminStaffMainMenu()) {
-            welcomeStr += LOGOUT_string + MANAGEQUERIES_string + ADDPAGE_string + SEE_ALL_PAGES_string + MANAGEFAQ_string;
-            String inp = view.getInputString(welcomeStr);
-            if (inp.equals(AdminStaffMainMenuOption.LOGOUT.getString())) {
-                sc.setCurrentUser(new Guest());
-            }
-            else{
-                AdminStaffController asc = new AdminStaffController(sc,view,as,es);
-                if (inp.equals(AdminStaffMainMenuOption.MANAGE_QUERIES.getString())) {
-                    asc.manageInquiries();
-                }
-                else if(inp.equals(AdminStaffMainMenuOption.ADD_PAGE.getString())) {
-                    asc.addPage();
-                }
-                else if (inp.equals(AdminStaffMainMenuOption.SEE_ALL_PAGES.getString())) {
-                    asc.viewAllPages();
-                }
-                else if (inp.equals(AdminStaffMainMenuOption.MANAGE_FAQ.getString())) {
-                    asc.manageFAQ();
-                }
-                else {
-                    invalidNum();
-                }
+        } else {
+            // Display an error if the user type is unrecognized
+            view.displayError("Unknown user type: " + currentUser.getClass().getName());
         }
-        } else if (handleTeachingStaffMainMenu()) {
-            welcomeStr += LOGOUT_string + MRQ_string;
-            String inp = view.getInputString(welcomeStr);
-            if (inp.equals(TeachingStaffMainMenuOption.LOGOUT.getString())) {
-                sc.setCurrentUser(new Guest());
-                mainMenu(); //Loop back with main menu for logged out user
-            } else if (inp.equals(TeachingStaffMainMenuOption.MANAGE_RECEIVED_QUERIES.getString())) {
-                TeachingStaffController tsc = new TeachingStaffController(sc,view,as,es);
-                tsc.manageReceivedInquiries();
-            }
-            else{
-                invalidNum();
-            }
-        }
-        else {
-            view.displayError("Unkown Role");
-        }
-        mainMenu();
-    }
-    private boolean handleGuestMainMenu(){
-        if (sc.getCurrentUser() instanceof Guest){
-            return true;
-        }
-        return false;
-    }
-    private boolean handleStudentMainMenu() {
-            if (sc.getCurrentUser().getRole().equals("Student")) {
-                return true;
-            }
-        return false;
-    }
-    private boolean handleTeachingStaffMainMenu(){
-        if (sc.getCurrentUser().getRole().equals("TeachingStaff")){
-            return true;
-        }
-        return false;
-    }
-    private boolean handleAdminStaffMainMenu(){
-        if (sc.getCurrentUser().getRole().equals("AdminStaff")){
-            return true;
-        }
-        return false;
-    }
-    private static final String LOGIN_string = "Press 1 to login\n";
-    private static final String FAQ_string =  "Press 2 to consult the FAQ\n";
-    private static final String WEBPAGE_string = "Press 3 to consult the webpages\n";
-    private static final String CONTACT_string = "Press 4 to consult a member of staff";
-    private static final String LOGOUT_string = "Press 1 to logout\n";
-    private static final String MRQ_string = "Press 2 to manage received queries";
-    private static final String MANAGEQUERIES_string = "Press 2 to manage queries\n";
-    private static final String ADDPAGE_string = "Press 3 to add a page\n";
-    private static final String SEE_ALL_PAGES_string = "Press 4 to see all pages\n";
-    private static final String MANAGEFAQ_string = "Press 5 to manage FAQ";
-    enum GuestMainMenuOption{LOGIN("1"), CONSULT_FAQ("2"), SEARCH_PAGES("3"), CONTACT_STAFF("4");
-        private String text;
-        private GuestMainMenuOption(String text) {
-            this.text = text;
-        }
-        public String getString() { return text; }
-    }
-    enum StudentMainMenuOption{LOGOUT("1"), CONSULT_FAQ("2"), SEARCH_PAGES("3"), CONTACT_STAFF("4");
-        private String text;
-        StudentMainMenuOption(String text){
-            this.text = text;
-        }
-        public String getString(){
-            return text;
+
+        // Recursively call mainMenu() if the flag is set to true, allowing the user to return to the main menu
+        if (res) {
+            mainMenu();
         }
     }
-    enum TeachingStaffMainMenuOption{LOGOUT("1"), MANAGE_RECEIVED_QUERIES("2");
-        private String text;
-        TeachingStaffMainMenuOption(String text){
-            this.text = text;
+
+    private boolean handleGuestMainMenu() throws IOException {
+        // Display guest main menu options and capture the selected option
+        int selectedOption = guestController.selectFromMenu(
+                List.of(GuestMainMenuOption.values()),
+                "Please select an option from the above list: "
+        );
+
+        // Process the selected option
+        switch (selectedOption) {
+            case -1:
+                // Exit
+                return false;
+            case 0:
+                // Login
+                guestController.login();
+                break;
+            case 1:
+                // Consult FAQ
+                inquirerController.consultFAQ();
+                break;
+            case 2:
+                // Search pages
+                inquirerController.searchPages();
+                break;
+            case 3:
+                // Contact staff
+                inquirerController.contactStaff();
+                break;
+            default:
+                // Handle unknown option
+                view.displayError("Unknown option: " + selectedOption);
+                break;
         }
-        public String getString(){
-            return text;
-        }}
-    enum AdminStaffMainMenuOption{LOGOUT("1"), MANAGE_QUERIES("2"), ADD_PAGE("3"), SEE_ALL_PAGES("4"), MANAGE_FAQ("5");
-        private String text;
-        AdminStaffMainMenuOption(String text){
-            this.text = text;
+        return true;
+    }
+
+    private boolean handleStudentMainMenu() throws IOException {
+        int selectedOption = inquirerController.selectFromMenu(List.of(StudentMainMenuOption.values()), "Please select an option from the above list: ");
+        switch (selectedOption) {
+            case -1: return false; // Exit
+            case 0: authenticatedUserController.logout(); break; // Logout
+            case 1: inquirerController.consultFAQ(); break; // Consult FAQ
+            case 2: inquirerController.searchPages(); break; // Search pages
+            case 3: inquirerController.contactStaff(); break; // Contact staff
+            default: view.displayError("Unknown option: " + selectedOption); break; // Error handling
         }
-        public String getString(){
-            return text;
-        }}
+        return true;
+    }
+
+    private boolean handleTeachingStaffMainMenu() {
+        int selectedOption = teachingStaffController.selectFromMenu(List.of(TeachingStaffMainMenuOption.values()), "Please select an option from the above list: ");
+        switch (selectedOption) {
+            case -1: return false; // Exit
+            case 0: authenticatedUserController.logout(); break; // Logout
+            case 1: teachingStaffController.manageReceivedInquiries(); break; // Manage received inquiries
+            default: view.displayError("Unknown option: " + selectedOption); break; // Error handling
+        }
+        return true;
+    }
+    private boolean handleAdminStaffMainMenu() {
+        int selectedOption = adminStaffController.selectFromMenu(List.of(AdminStaffMainMenuOption.values()), "Please select an option from the above list: ");
+        switch (selectedOption) {
+            case -1: return false; // Exit
+            case 0: authenticatedUserController.logout(); break; // Logout
+            case 1: adminStaffController.manageInquiries(); break; // Manage received inquiries
+            case 2: adminStaffController.addPage(); break; // Add page
+            case 3: adminStaffController.viewAllPages(); break; // See all pages
+            case 4: adminStaffController.manageFAQ(); break; // Manage FAQ
+            default: view.displayError("Unknown option: " + selectedOption); break; // Error handling
+        }
+        return true;
+    }
 
 }
