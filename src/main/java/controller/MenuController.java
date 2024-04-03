@@ -14,14 +14,13 @@ public class MenuController extends Controller {
         mainMenu();
     }
     public void mainMenu(){
-        String welcomeStr = "Welcome to the kiosk!\n";
+        String welcomeStr = "";
         if (handleGuestMainMenu()){
             welcomeStr += LOGIN_string + FAQ_string + WEBPAGE_string + CONTACT_string;
             String inp = view.getInputString(welcomeStr);
             if (inp.equals(GuestMainMenuOption.LOGIN.getString())) {
                 GuestController controller = new GuestController(sc, view, as, es);
                 controller.login();
-                mainMenu(); //Loop back with main menu for logged in user
             }
             else{
                 InquirerController ic = new InquirerController(sc, view, as, es);
@@ -40,7 +39,6 @@ public class MenuController extends Controller {
             String inp = view.getInputString(welcomeStr);
             if (inp.equals(StudentMainMenuOption.LOGOUT.getString())) {
                 sc.setCurrentUser(new Guest());
-                mainMenu(); //Loop back with main menu for logged out user
             } else {
                 InquirerController ic = new InquirerController(sc, view, as, es);
                 if (inp.equals(StudentMainMenuOption.CONSULT_FAQ.getString())) {
@@ -61,7 +59,6 @@ public class MenuController extends Controller {
             String inp = view.getInputString(welcomeStr);
             if (inp.equals(AdminStaffMainMenuOption.LOGOUT.getString())) {
                 sc.setCurrentUser(new Guest());
-                mainMenu(); //Loop back with main menu for logged out user
             }
             else{
                 AdminStaffController asc = new AdminStaffController(sc,view,as,es);
@@ -87,7 +84,7 @@ public class MenuController extends Controller {
             if (inp.equals(TeachingStaffMainMenuOption.LOGOUT.getString())) {
                 sc.setCurrentUser(new Guest());
                 mainMenu(); //Loop back with main menu for logged out user
-            } else if (inp.equals(TeachingStaffMainMenuOption.MANAGE_RECEIVED_QUERIES)) {
+            } else if (inp.equals(TeachingStaffMainMenuOption.MANAGE_RECEIVED_QUERIES.getString())) {
                 TeachingStaffController tsc = new TeachingStaffController(sc,view,as,es);
                 tsc.manageReceivedInquiries();
             }
@@ -98,6 +95,7 @@ public class MenuController extends Controller {
         else {
             view.displayError("Unkown Role");
         }
+        mainMenu();
     }
     private boolean handleGuestMainMenu(){
         if (sc.getCurrentUser() instanceof Guest){

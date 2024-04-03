@@ -15,6 +15,7 @@ public class Main {
         MockAuthenticationService as = new MockAuthenticationService();
         MockEmailService es = new MockEmailService();
         MenuController mc = new MenuController(sc,view,as,es);
+        view.displayInfo("Welcome to the kiosk!");
         mc.mainMenu();
     }
 }
