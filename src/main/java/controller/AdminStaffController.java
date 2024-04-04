@@ -3,10 +3,7 @@ package controller;
 import external.AuthenticationService;
 import external.EmailService;
 import external.MockEmailService;
-import model.AuthenticatedUser;
-import model.Inquiry;
-import model.Page;
-import model.SharedContext;
+import model.*;
 import view.View;
 
 
@@ -19,10 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLOutput;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AdminStaffController extends StaffController{
     public AdminStaffController(SharedContext sc, View view, AuthenticationService as, EmailService es){
@@ -125,18 +119,222 @@ public class AdminStaffController extends StaffController{
 
     }
 
-    //todo
-    public void manageFAQ(){
+
+    public void manageFAQ() {
+        FAQ faq = sc.getFAQ();
+        view.displayInfo("Welcome to the FAQ Management System!");
+        User currentUser = sc.getCurrentUser();
+
+        // Retrieve the FAQ and welcome the user
+
+        if (sc.getCurrentUser() instanceof AuthenticatedUser) {
+            String userEmail = ((AuthenticatedUser) sc.getCurrentUser()).getEmail();
+            // Possibly use userEmail for something specific, like logging or personalized messages
+        }
 
 
+        FAQSection currentSection = null;// Tracks the current FAQ section
+        int optionNo = 0;// User's menu choice
 
 
+        boolean bool = false;
+        // Display options based on whether FAQ sections are present and which section is currently being viewed
+        while (!(currentSection == null && optionNo == -1)) {
+            if (!faq.getSections().isEmpty()) {
+                if (currentSection == null) {
+                    //display FAQ and option
+                    view.displayFAQ(faq, false);
+                    view.displayInfo("[-1] to return to main menu ");
+                } else {
+                    view.displayFAQSection(currentSection, false);
+
+                    // Conditional return option based on whether the current section has a parent
+                    if (currentSection.getParent() == null) {
+                        view.displayInfo("[-1] to return to main menu");
+                    } else {
+
+                        view.displayInfo("[-1] to return to " + currentSection.getParent().getTopic());
+                    }
+                }
+                // Option to add a new question-answer pair in the current or new section
+                if (currentSection != null) {
+                    view.displayInfo("[-2] to add a new question-answer pair");
+                } else {
+                    view.displayInfo("[-2] to add a new question-answer pair in a new section");
+                }
+            }
+            else {
+                // Option to add a new question-answer pair in the current or new section
+                view.displayInfo("\nCurrently, there is no question-answer pair for this.\n");
+                view.displayInfo("[-1] to return to main menu");
+                view.displayInfo("[-2] to add a new question-answer pair in a new section");
+            }
+            try {
+                optionNo = Integer.parseInt(view.getInputString("Please choose an option from -1,-2, 0 (refresh page) "));
+
+                switch (optionNo) {
+                    case -1:
+                        if (currentSection != null) {
+                            if (currentSection.getParent() != null) {
+                                currentSection = currentSection.getParent();
+                                optionNo = 0;
+                            } else {
+                                currentSection = null;
+                            }
+                        }
+                        break;
+
+                    case -2:
+                        String question = view.getInputString("Enter question: ");
+                        String answer = view.getInputString("Enter answer: ");
+
+                        if (!question.isEmpty() && !answer.isEmpty()) {
+                            if (currentSection == null) {
+                                String newSection = view.getInputString("Enter name of new section to create: ");
+                                if (!newSection.isEmpty()) {
+                                    FAQSection actualSection = faq.getSections().get(newSection);
+                                    if (actualSection != null) {
+
+                                        view.displayWarning("A section with that name already exists. The question has been added to that section.");
+
+                                        actualSection.addItem(question, answer);
+
+                                        Collection<String> subscribers = sc.usersSubscribedToFAQTopic(newSection);
+                                        if (!subscribers.isEmpty()) {
+                                            for (String subscriberEmail : subscribers) {
+
+                                                es.sendEmail(SharedContext.ADMIN_STAFF_EMAIL, subscriberEmail, "Update on"+ question, answer);
+                                            }
+                                        } else{
+                                            view.displayInfo("Updated!");
+                                        }
+                                    }
+
+                                    else {
+
+                                        Map<String, String> items = new HashMap<>();
+                                        items.put(question, answer);
+                                        faq.addSectionItems(newSection, items);
+                                        view.displayInfo("The question has been added to the new section.");
+                                    }
+                                } else {
+                                    view.displayInfo("The section name must not be empty. Cancelling operation.");
+                                }
+                            } else {
+
+                                boolean createNewSection = view.getYesNoInputString("Would you like to add the question to a new subsection?");
+                                if (createNewSection) {
+
+                                    String newSection = view.getInputString("Enter the name of the new subsection. ");
+                                    if (!newSection.isEmpty()) {
+
+                                        FAQSection subsection = null;
+                                        for (FAQSection sub : currentSection.getSubsections()) {
+                                            if (sub.getTopic().equals(newSection)) {
+                                                subsection = sub;
+                                                break;
+                                            }
+                                        }
+
+                                        if (subsection != null) {
+
+                                            view.displayWarning("A subsection with that name already exists. The question is added these.");
+                                            subsection.addItem(question, answer);
+                                        } else {
+
+                                            FAQSection newSubsection = new FAQSection(newSection);
+                                            newSubsection.addItem(question, answer);
+                                            currentSection.addSubsection(newSubsection);
+                                            view.displayInfo("The question is added to the new subsection.");
+                                        }
+                                    } else {
+                                        view.displayInfo("The subsection name must not be empty. Cancelling operation...");
+                                    }
+                                } else {
+
+                                    currentSection.addItem(question, answer);
+                                    view.displayInfo("The question has just been added to the current section.");
+
+                                }
+                            }
+                        } else {
+                            view.displayInfo("The question and answer must not be empty. Cancelling operation...");
+                        }
+                        break;
+
+                    default:
+                        if (currentSection != null) {
+                            List<FAQSection> subsectionsList = new ArrayList<>(currentSection.getSubsections());
+                            if (currentSection.getSubsections().size() > optionNo) {
+
+                                currentSection = subsectionsList.get(optionNo);
+                            } else {
+                                view.displayInfo("Invalid option: " + optionNo);
+                            }
+                        } else {
+                            List<FAQSection> sections = new ArrayList<>(faq.getSections().values());
+                            if (sections.size() > optionNo) {
+                                currentSection = sections.get(optionNo);
+                            } else {
+                                view.displayInfo("Invalid option: " + optionNo);
+                            }
+                        }
+                        break;
+                }
+
+            }
+            catch (NumberFormatException e){
+                view.displayInfo("Invalid option " + optionNo +".");
+                view.displayInfo("Please enter a number");
+            }
+        }
     }
 
-    //todo
-    private void addFAQItem(){
 
+
+    private void addFAQItem(FAQSection section) {
+        // Retrieve the FAQ from the shared context
+        FAQ faq = sc.getFAQ();
+
+        // Inform the user about the addition process
+        view.displayInfo("Adding a new FAQ item. Please provide the necessary details.");
+
+        // Prompt for the question and answer
+        String question = view.getInputString("Enter the question:");
+        String answer = view.getInputString("Enter the answer:");
+
+        // Validate the input
+        if (question.isEmpty() || answer.isEmpty()) {
+            view.displayError("Both question and answer must be provided. Operation cancelled.");
+            return;
+        }
+
+        // Prompt for the section name
+        String sectionName = view.getInputString("Enter the name of the section for this FAQ item:");
+
+        // Attempt to retrieve the section by name
+        section = faq.getSections().get(sectionName);
+        if (section == null) {
+            // If the section doesn't exist, ask if the user wants to create a new one
+            boolean createNewSection = view.getYesNoInputString("The section does not exist. Would you like to create it?");
+            if (createNewSection) {
+                // Create a new section and add the FAQ item
+                Map<String, String> items = new HashMap<>();
+                items.put(question, answer);
+                faq.addSectionItems(sectionName, items);
+                view.displaySuccess("New section created and FAQ item added successfully to: " + sectionName);
+            } else {
+                // Operation cancelled by the user
+                view.displayInfo("Operation cancelled.");
+                return;
+            }
+        } else {
+            // Add the item to the existing section
+            section.addItem(question, answer);
+            view.displaySuccess("FAQ item added successfully to section: " + sectionName);
+        }
     }
+
     /**
      * Displays all available pages to the user and allows them to view a specific page,
      * add a new page, or exit the viewing interface.
