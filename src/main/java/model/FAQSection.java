@@ -32,7 +32,7 @@ public class FAQSection {
         this.items = new ArrayList<>();
         this.subsections = new ArrayList<>();
         this.parent = null; // Initially, there is no parent until this section is added as a subsection.
-        this.faqItems = new ArrayList<>();
+
 
     }
 
@@ -107,6 +107,6 @@ public class FAQSection {
     }
 
     public void addItem(FAQItem faqItem) {
-        this.faqItems.add(faqItem);
+
     }
 }
