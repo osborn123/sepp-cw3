@@ -75,4 +75,9 @@ public class MockAuthenticationService implements AuthenticationService {
 
         return user.toJSONString();
     }
+
+    @Override
+    public Object authenticate(String username, String password) {
+        return null;
+    }
 }

@@ -20,6 +20,7 @@ public class SharedContext {
     private Map<String, Collection<String>> faqTopicsUpdateSubscribers;
     private Map<String, Page> availablePages = new HashMap<>();
 
+    private FAQ faq;
     public SharedContext() {
         faqTopicsUpdateSubscribers = new HashMap<>();
         User currentUser = new Guest();
@@ -70,4 +71,7 @@ public class SharedContext {
         return faq;
     }
 
+    public void setFAQ(FAQ faq) {
+        this.faq = faq;
+    }
 }

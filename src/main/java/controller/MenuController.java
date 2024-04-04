@@ -41,15 +41,16 @@ public class MenuController extends Controller {
 
 
 
-    private InquirerController inquirerController;
+    private InquirerController inquirerController;  // This controller is responsible for handling the user's requests before they have logged in.
     private AdminStaffController adminStaffController;
-    private TeachingStaffController teachingStaffController;
-    private GuestController guestController;
-    private AuthenticatedUserController authenticatedUserController;
+    private TeachingStaffController teachingStaffController;// This controller is responsible for handling the user's requests after they have logged in.
+    private GuestController guestController;  // This controller is responsible for handling the user's requests before they have logged in.
+    private AuthenticatedUserController authenticatedUserController;  // This controller is responsible for handling the user's requests after they have logged in.
     private StaffController staffController;
 
     public MenuController(SharedContext sharedContext, View view, AuthenticationService authenticationService,
                           EmailService emailService){
+        // This controller is responsible for handling the user's requests after they have logged in.
         super(sharedContext, view, authenticationService, emailService);
         inquirerController = new InquirerController(sharedContext, view, authenticationService, emailService);
         adminStaffController = new AdminStaffController(sharedContext, view, authenticationService, emailService);
@@ -59,7 +60,7 @@ public class MenuController extends Controller {
                 emailService);
     }
 
-
+    //    public void setMenuController(MenuController menuController) {
     public void mainMenu() throws IOException {
         User currentUser = sc.getCurrentUser();
         boolean res = true; // A flag to determine whether to return to the main menu
@@ -130,6 +131,7 @@ public class MenuController extends Controller {
     }
 
     private boolean handleStudentMainMenu() throws IOException {
+        // Display student main menu options and capture the selected option
         int selectedOption = inquirerController.selectFromMenu(List.of(StudentMainMenuOption.values()), "Please select an option from the above list: ");
         switch (selectedOption) {
             case -1: return false; // Exit
@@ -143,6 +145,7 @@ public class MenuController extends Controller {
     }
 
     private boolean handleTeachingStaffMainMenu() {
+        // Display teaching staff main menu options and capture the selected option
         int selectedOption = teachingStaffController.selectFromMenu(List.of(TeachingStaffMainMenuOption.values()), "Please select an option from the above list: ");
         switch (selectedOption) {
             case -1: return false; // Exit

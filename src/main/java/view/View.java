@@ -20,4 +20,15 @@ public interface View {
     public void displayFAQSection(FAQSection faqSection, boolean bool);
     public void displayInquiry(Inquiry inquiry);
     public void displaySearchResults(Collection<PageSearchResult> pageSearchResultCollection);
+
+
+    boolean getYesNoInputs(String message);
+
+    String getInput(String prompt);
+
+
+    void displayFAQsection(Class<? extends Collection> section);
+
+    void displayString(String message);
 }
+

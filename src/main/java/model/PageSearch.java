@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Collections;
 
 
 public class PageSearch {
@@ -72,14 +73,25 @@ public class PageSearch {
      * @throws ParseException If there is an error parsing the query.
      * @throws IOException If there is a low-level IO error.
      */
-    public Collection<PageSearchResult> search(String query) throws ParseException, IOException {
+    public Collection<PageSearchResult> search(String query) throws IOException {
+        if (query == null || query.trim().isEmpty()) {
+            // Return an empty collection immediately if the query is null or empty
+            return Collections.emptyList();
+        }
+
         pageSearchResults = new ArrayList<>();
         ArrayList<String> pagesTracker = new ArrayList<>(); // Tracks pages to ensure uniqueness
 
         try (DirectoryReader reader = DirectoryReader.open(index)) {
             IndexSearcher searcher = new IndexSearcher(reader);
             QueryParser parser = new QueryParser("paragraph", analyzer);
-            Query luceneQuery = parser.parse(query);
+            Query luceneQuery = null;
+            try {
+                luceneQuery = parser.parse(query);
+            } catch (ParseException e) {
+                // Handle ParseException
+                return Collections.emptyList();
+            }
 
             TopDocs topDocs = searcher.search(luceneQuery, Integer.MAX_VALUE);
 
