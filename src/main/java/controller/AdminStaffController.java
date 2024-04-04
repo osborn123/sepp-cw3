@@ -185,80 +185,63 @@ public class AdminStaffController extends StaffController{
                         break;
 
                     case -2:
+                        // Prompt for the question and answer
                         String question = view.getInputString("Enter question: ");
                         String answer = view.getInputString("Enter answer: ");
 
-                        if (!question.isEmpty() && !answer.isEmpty()) {
+                        // Check for non-empty inputs
+                        if (question.isEmpty() || answer.isEmpty()) {
+                            view.displayInfo("The question and answer must not be empty. Cancelling operation...");
+                        } else {
+                            // Determine the appropriate section for the new Q&A
                             if (currentSection == null) {
+                                // At root, prompt for a new or existing section
                                 String newSection = view.getInputString("Enter name of new section to create: ");
-                                if (!newSection.isEmpty()) {
+                                if (newSection.isEmpty()) {
+                                    view.displayInfo("The section name must not be empty. Cancelling operation.");
+                                } else {
+                                    // Check if section already exists
                                     FAQSection actualSection = faq.getSections().get(newSection);
                                     if (actualSection != null) {
-
+                                        // Section exists, add the item here
                                         view.displayWarning("A section with that name already exists. The question has been added to that section.");
-
-                                        actualSection.addItem(question, answer);
-
-                                        Collection<String> subscribers = sc.usersSubscribedToFAQTopic(newSection);
-                                        if (!subscribers.isEmpty()) {
-                                            for (String subscriberEmail : subscribers) {
-
-                                                es.sendEmail(SharedContext.ADMIN_STAFF_EMAIL, subscriberEmail, "Update on"+ question, answer);
-                                            }
-                                        } else{
-                                            view.displayInfo("Updated!");
-                                        }
+                                    } else {
+                                        // Create new section and add the item
+                                        actualSection = new FAQSection(newSection);
+                                        faq.getSections().put(newSection, actualSection);
+                                        view.displayInfo("A new section has been created and the question added.");
                                     }
-
-                                    else {
-
-                                        Map<String, String> items = new HashMap<>();
-                                        items.put(question, answer);
-                                        faq.addSectionItems(newSection, items);
-                                        view.displayInfo("The question has been added to the new section.");
-                                    }
-                                } else {
-                                    view.displayInfo("The section name must not be empty. Cancelling operation.");
+                                    actualSection.addItem(question, answer);
+                                    // Notify subscribers, if any
+                                    notifySubscribers(newSection, question, answer);
                                 }
                             } else {
-
+                                // Inside a specific section, check if adding to a new subsection
                                 boolean createNewSection = view.getYesNoInputString("Would you like to add the question to a new subsection?");
                                 if (createNewSection) {
-
-                                    String newSection = view.getInputString("Enter the name of the new subsection. ");
-                                    if (!newSection.isEmpty()) {
-
-                                        FAQSection subsection = null;
-                                        for (FAQSection sub : currentSection.getSubsections()) {
-                                            if (sub.getTopic().equals(newSection)) {
-                                                subsection = sub;
-                                                break;
-                                            }
-                                        }
-
-                                        if (subsection != null) {
-
-                                            view.displayWarning("A subsection with that name already exists. The question is added these.");
-                                            subsection.addItem(question, answer);
-                                        } else {
-
-                                            FAQSection newSubsection = new FAQSection(newSection);
-                                            newSubsection.addItem(question, answer);
-                                            currentSection.addSubsection(newSubsection);
-                                            view.displayInfo("The question is added to the new subsection.");
-                                        }
-                                    } else {
+                                    // Create or find subsection
+                                    String newSection = view.getInputString("Enter the name of the new subsection: ");
+                                    if (newSection.isEmpty()) {
                                         view.displayInfo("The subsection name must not be empty. Cancelling operation...");
+                                    } else {
+                                        FAQSection finalCurrentSection = currentSection;
+                                        FAQSection subsection = currentSection.getSubsections().stream()
+                                                .filter(sub -> sub.getTopic().equals(newSection))
+                                                .findFirst()
+                                                .orElseGet(() -> {
+                                                    FAQSection newSubsection = new FAQSection(newSection);
+                                                    finalCurrentSection.addSubsection(newSubsection);
+                                                    return newSubsection;
+                                                });
+                                        subsection.addItem(question, answer);
+                                        view.displayInfo("The question is added to the new subsection.");
                                     }
                                 } else {
-
+                                    // Directly add to the current section
                                     currentSection.addItem(question, answer);
                                     view.displayInfo("The question has just been added to the current section.");
-
                                 }
                             }
-                        } else {
-                            view.displayInfo("The question and answer must not be empty. Cancelling operation...");
                         }
                         break;
 
@@ -293,7 +276,15 @@ public class AdminStaffController extends StaffController{
             }
         }
     }
-
+    private void notifySubscribers(String sectionName, String question, String answer) {
+        Collection<String> subscribers = sc.usersSubscribedToFAQTopic(sectionName);
+        if (subscribers != null && !subscribers.isEmpty()) {
+            for (String subscriberEmail : subscribers) {
+                es.sendEmail(SharedContext.ADMIN_STAFF_EMAIL, subscriberEmail, "Update on " + question, answer);
+            }
+            view.displayInfo("Subscribers notified.");
+        }
+    }
 
 
     private void addFAQItem(FAQSection section) {
