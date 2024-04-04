@@ -121,6 +121,8 @@ public class AdminStaffController extends StaffController{
 
 
     public void manageFAQ() {
+
+        // Retrieve the FAQ from the shared context
         FAQ faq = sc.getFAQ();
         view.displayInfo("Welcome!");
         User currentUser = sc.getCurrentUser();
@@ -128,6 +130,8 @@ public class AdminStaffController extends StaffController{
         if (currentUser != null && currentUser instanceof AuthenticatedUser) {
             String userEmail = ((AuthenticatedUser) currentUser).getEmail();
         }
+
+        // Display the FAQ management options
         FAQSection currentSection = null;
         int optionNo = 0;
         while (!(currentSection == null && optionNo == -1)) {
@@ -158,6 +162,7 @@ public class AdminStaffController extends StaffController{
                 view.displayInfo("[-1] to return to main menu");
                 view.displayInfo("[-2] to add a new question-answer pair in a new section");
             }
+            // Prompt the user for an option
             try {
                 optionNo = Integer.parseInt(view.getInputString("Please choose an option from -1,-2, 0 (refresh page) "));
 
@@ -201,7 +206,7 @@ public class AdminStaffController extends StaffController{
                                     }
 
                                     else {
-
+// Create a new section and add the question to it
                                         Map<String, String> items = new HashMap<>();
                                         items.put(question, answer);
                                         faq.addSectionItems(newSection, items);
@@ -211,7 +216,7 @@ public class AdminStaffController extends StaffController{
                                     view.displayInfo("The section name must not be empty. Cancelling operation.");
                                 }
                             } else {
-
+// Ask the user if they want to add the question to a new subsection
                                 boolean createNewSection = view.getYesNoInputString("Would you like to add the question to a new subsection?");
                                 if (createNewSection) {
 
@@ -225,7 +230,7 @@ public class AdminStaffController extends StaffController{
                                                 break;
                                             }
                                         }
-
+// Check if the subsection already exists
                                         if (subsection != null) {
 
                                             view.displayWarning("A subsection with that name already exists. The question is added these.");
@@ -241,7 +246,7 @@ public class AdminStaffController extends StaffController{
                                         view.displayInfo("The subsection name must not be empty. Cancelling operation...");
                                     }
                                 } else {
-
+// Add the question to the current section
                                     currentSection.addItem(question, answer);
                                     view.displayInfo("The question has just been added to the current section.");
 
@@ -272,7 +277,7 @@ public class AdminStaffController extends StaffController{
                         break;
                 }
 
-            }
+            }//end of try
             catch (NumberFormatException e){
                 view.displayInfo("Invalid option " + optionNo +".");
                 view.displayInfo("Please enter a number");
