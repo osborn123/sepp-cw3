@@ -15,8 +15,8 @@ public class AuthenticatedUserController extends Controller{
     // This method is responsible for handling the user's request to logout.
 
     public void logout() {
-        view.displayError("Logout successful!");
-        sc.setCurrentUser(null);
+        view.displaySuccess("Logout successful!");
+        sc.setCurrentUser(new Guest());
 
     }
 }

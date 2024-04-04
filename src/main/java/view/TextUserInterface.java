@@ -85,7 +85,7 @@ public class TextUserInterface implements View {
      */
     @Override
     public void displayError(String message) {
-        System.out.println("Error: " + message);
+        System.err.println("Error: " + message);
     }
 
     /**

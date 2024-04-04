@@ -140,8 +140,7 @@ try{
 catch (NumberFormatException e) {
     // Handle the case where the input is not a valid integer
     view.displayError("Invalid option " + selection);
-    optionNo = -1;
-}
+    optionNo = -1;}
 
         }
 

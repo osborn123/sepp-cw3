@@ -70,8 +70,7 @@ public class MenuController extends Controller {
             res = handleGuestMainMenu();
         } else if (currentUser instanceof AuthenticatedUser) {
             // Cast the current user to AuthenticatedUser for role checking
-            AuthenticatedUser authenticatedUser = (AuthenticatedUser) currentUser;
-            String role = authenticatedUser.getRole();
+            String role = currentUser.getRole();
 
             // Handle main menu options based on the user's role
             if ("Student".equals(role)) {
