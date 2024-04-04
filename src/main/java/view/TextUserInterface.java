@@ -121,7 +121,7 @@ public class TextUserInterface implements View {
             displayFAQSection(section, expanded);
         }
 
-        if (expanded) {
+        if (!expanded) {
             pauseExecution();
         }
     }

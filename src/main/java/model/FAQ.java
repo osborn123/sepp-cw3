@@ -19,6 +19,7 @@ public class FAQ {
         sections.put(topic, section);
     }
 
+
     public Map<String, FAQSection> getSections() {
         // NOT sure if this is correct, but i think i need a getter here - bw
         return sections;

@@ -11,141 +11,112 @@ import java.util.*;
 import org.apache.lucene.queryparser.classic.ParseException;
 public class InquirerController extends Controller{
 
-    private SharedContext sc;
-    private View view;
-    private AuthenticationService as;
-    private EmailService es;
+//    private SharedContext sc;
+//    private View view;
+//    private AuthenticationService as;
+//    private EmailService es;
 
     public InquirerController(SharedContext sc, View view, AuthenticationService as, EmailService es){
         super(sc, view, as, es);
-        //Assigning to class-level fields
-        this.sc = sc;
-        this.view = view;
-        this.as = as;
-        this.es = es;
+//        //Assigning to class-level fields
+//        this.sc = sc;
+//        this.view = view;
+//        this.as = as;
+//        this.es = es;
     }
-    public void consultFAQ(){
-
-        int optionNo = 0;
-
+    public void consultFAQ() {
+        view.displayDivider();
+        view.displayInfo("Welcome to FAQ!");
+        view.displayDivider();
         FAQSection currentSection = null;
+        int optionNo = 0;
+        User currentUser = sc.getCurrentUser();
+        String userEmail = null;
 
-        FAQSection parentSection;
-
-        User user = sc.getCurrentUser();
-
-        String email = null;
-
-        if (user instanceof AuthenticatedUser){
-            email = ((AuthenticatedUser) user).getEmail();
+        if (currentUser instanceof AuthenticatedUser) {
+            userEmail = ((AuthenticatedUser) currentUser).getEmail();
         }
-
-        while (!(currentSection == null && optionNo == -1)){
-
-            if (currentSection == null){
+        while (currentSection != null || optionNo != -1) {
+            if (currentSection == null) {
                 FAQ faq = sc.getFAQ();
                 view.displayFAQ(faq,true);
                 view.displayInfo("[-1] to return to main menu");
-
-            }
-            else {
+            } else {
                 view.displayFAQSection(currentSection,true);
-
-                parentSection = currentSection.getParent();
-
-                if (parentSection == null){
-                    view.displayInfo("[-1] to return to main menu");
+                FAQSection parent = currentSection.getParent();
+                if (parent == null) {
+                    view.displayInfo("[-1] to return to FAQ");
+                } else {
+                    String topic = parent.getTopic();
+                    view.displayInfo("[-1] to return to " + topic);
                 }
-                else {
-                    String parentTopic = parentSection.getTopic();
-                    view.displayInfo("[-1] to return to " + parentTopic);
-                }
-
-                if (user instanceof Guest){
+                if (userEmail == null) {
                     view.displayInfo("[-2] to request updates for this topic");
                     view.displayInfo("[-3] to stop receiving updates for this topic");
-                }
-                else {
+                } else {
                     String topic = currentSection.getTopic();
                     Collection<String> subscribers = sc.usersSubscribedToFAQTopic(topic);
 
-                    if (sc.registerForFAQUpdates(topic, email)){
+                    if (subscribers != null && subscribers.contains(userEmail)) {
                         view.displayInfo("[-2] to stop receiving updates for this topic");
-                    }
-                    else {
+                    } else {
                         view.displayInfo("[-2] to request updates for this topic");
                     }
                 }
-
             }
-
-            String selection = view.getInputString("Please choose an option: ");
-
-try{
-            if (selection.matches("-?\\d+")){
-
-                optionNo = Integer.parseInt(selection);
+            view.displayInfo("Enter Topic number to get into the topic: ");
+            String input = view.getInputString("Please choose an option");
+            try {
+                optionNo = Integer.parseInt(input);
+                ArrayList<FAQSection> sections = null;
 
                 if (optionNo != -1 && optionNo != -2 && optionNo != -3) {
-
-                    ArrayList<FAQSection> sections;
-
-                    if (currentSection == null){
+                    if (currentSection == null) {
                         FAQ faq = sc.getFAQ();
-                        sections = (ArrayList) faq.getSections();
+
+                        sections = new ArrayList<>(faq.getSections().values());
+                    } else {
+
+                        sections = (ArrayList<FAQSection>) currentSection.getSubsections();
 
                     }
-                    else{
-                        sections = (ArrayList) currentSection.getSubsections();
-                    }
+                    if (optionNo < 0 || optionNo >= sections.size()) {
+                        view.displayError("Invalid option " + optionNo);
+                    } else {
 
-                    if (optionNo >= 0 && optionNo < sections.size()){
-                        currentSection =  new ArrayList<>(sections).get(optionNo -1);
-
+                        currentSection = sections.get(optionNo);
                     }
-                    else {
-                        view.displayError("Invalid option: " + selection);
-                    }
-
                 }
-                else if (currentSection != null){
+                if (currentSection != null) {
                     String topic = currentSection.getTopic();
+                    if (userEmail == null && optionNo == -2) {
 
-                    if (email == null && optionNo == -2){
-                        requestFAQUpdates(email,topic);
+                        requestFAQUpdates(null, topic);
                     }
-                    else if (email == null && optionNo == -3){
-                        stopFAQUpdates(email, topic);
+                    if (userEmail == null && optionNo == -3) {
+                        stopFAQUpdates(null, topic);
                     }
-                    else if ( email != null  && optionNo == -2 ){
+                    if (userEmail != null && optionNo == -2) {
                         Collection<String> subscribers = sc.usersSubscribedToFAQTopic(topic);
-                        email = ((AuthenticatedUser)user ).getEmail();
-                        if (sc.registerForFAQUpdates(topic, email)){
-                            stopFAQUpdates(email, topic );
+                        userEmail = ((AuthenticatedUser) currentUser).getEmail();
+                        if (subscribers.contains(userEmail)) {
+                            stopFAQUpdates(userEmail, topic);
+                        } else {
+                            requestFAQUpdates(userEmail, topic);
                         }
-                        else {
-                            requestFAQUpdates(email, topic);
-                        }
-
                     }
-                    else if (optionNo == -1) {
-                        parentSection = currentSection.getParent();
-                        currentSection = parentSection;
+                    if (optionNo == -1) {
+//
+                        FAQSection parent = currentSection.getParent();
                         optionNo = 0;
+                        currentSection = parent;
                     }
                 }
-
+            } catch (NumberFormatException e) {
+                view.displayError("Invalid option " + optionNo);
             }
-}
-catch (NumberFormatException e) {
-    // Handle the case where the input is not a valid integer
-    view.displayError("Invalid option " + selection);
-    optionNo = -1;}
-
         }
-
     }
-
 
 
 
