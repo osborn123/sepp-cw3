@@ -8,7 +8,6 @@ import view.View;
 import java.io.IOException;
 import java.util.*;
 
-import org.apache.lucene.queryparser.classic.ParseException;
 public class InquirerController extends Controller{
 
     private SharedContext sc;
@@ -172,8 +171,6 @@ public class InquirerController extends Controller{
             view.displayDivider();
         } catch (IOException ioException) {
             view.displayException("IO Error during search: " + ioException.getMessage());
-        } catch (ParseException parseException) {
-            view.displayException("Parse Error during search: " + parseException.getMessage());
         }
     }
 
