@@ -69,12 +69,13 @@ public class AdminStaffController extends StaffController{
             // If the content is still null after attempting to read the file, it indicates an error in reading the file
             if (content == null) {
                 // Prompt the user to decide whether to try reading from another file path due to the error
-                boolean tryAgain = view.getYesNoInputString("Error reading file. Would you like to try another file path? (Yes/No)");
+                boolean tryAgain = view.getYesNoInputString("Error reading file. Would you like to try another file path?");
 
-                // If the user decides not to try again, exit the method early
-                if (!tryAgain) {
-                    return;
+                // If the user to try again, start while loop again. If not, go back to menu.
+                if (tryAgain) {
+                    continue;
                 }
+                else return;
             }
             Boolean isPrivate = view.getYesNoInputString("Should this page be private?");
 

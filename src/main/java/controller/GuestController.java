@@ -18,9 +18,9 @@ public class GuestController extends Controller{
 
         String response = as.login(email, password);
         JSONObject json = (JSONObject) JSONValue.parse(response);
-        String err = (String)json.get("error");
+        // String err = (String)json.get("error");
         if(json.isEmpty()){
-            view.displayError(err);
+            view.displayError("Wrong username or password");
             login();
         }
         else{

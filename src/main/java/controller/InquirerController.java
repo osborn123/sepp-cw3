@@ -133,18 +133,13 @@ public class InquirerController extends Controller{
                     }
                 }
 
-
             }
             else {
                 view.displayError("Invalid option: " + selection);
                 optionNo = -1;
             }
 
-
-
         }
-
-
 
     }
 
@@ -155,7 +150,7 @@ public class InquirerController extends Controller{
         // Prompt the user for a search query
         String searchQuery = view.getInputString("Enter your search query: ");
 
-        // Retrieve all pages available in the shared context
+        // Initialize the availablePages map to ensure it's not null
         Map<String, Page> availablePages = new HashMap<>(sc.getPages());
 
         // Check the current user's access rights

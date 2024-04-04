@@ -13,7 +13,7 @@ public class AuthenticatedUserController extends Controller{
 
     public void logout() {
         view.displayError("Logout successful!");
-        sc.setCurrentUser(null);
+        sc.setCurrentUser(new Guest()); // Sets the currentUser to Guest
 
     }
 }

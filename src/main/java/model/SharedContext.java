@@ -17,6 +17,7 @@ public class SharedContext {
 
     private User currentUser = new Guest();
     private Map<String, Collection<String>> faqTopicsUpdateSubscribers;
+    private Map<String, Page> availablePages = new HashMap<>();
 
     public SharedContext() {
         faqTopicsUpdateSubscribers = new HashMap<>();
@@ -60,9 +61,8 @@ public class SharedContext {
     public void setCurrentUser(User user){
         currentUser = user;
     }
-    public Map<String, Page> getPages(){
-        return null;
-    }
+    public Map<String, Page> getPages(){ return availablePages; }
+    
     public FAQ getFAQ() {
         // Return the FAQ object
         return new FAQ();
