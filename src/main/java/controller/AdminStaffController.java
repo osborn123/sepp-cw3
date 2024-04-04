@@ -266,16 +266,20 @@ public class AdminStaffController extends StaffController{
                         if (currentSection != null) {
                             List<FAQSection> subsectionsList = new ArrayList<>(currentSection.getSubsections());
                             if (currentSection.getSubsections().size() > optionNo) {
-
+                            // Valid option, navigate to the selected main section
                                 currentSection = subsectionsList.get(optionNo);
                             } else {
+                                // Invalid option, display an error message
                                 view.displayInfo("Invalid option: " + optionNo);
                             }
                         } else {
+
                             List<FAQSection> sections = new ArrayList<>(faq.getSections().values());
                             if (sections.size() > optionNo) {
+                                // Valid option, navigate to the selected subsection
                                 currentSection = sections.get(optionNo);
                             } else {
+                                // Invalid option, indicate the error
                                 view.displayInfo("Invalid option: " + optionNo);
                             }
                         }
