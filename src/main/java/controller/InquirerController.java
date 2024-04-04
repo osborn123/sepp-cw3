@@ -27,19 +27,19 @@ public class InquirerController extends Controller{
     public void consultFAQ(){
 
         int optionNo = 0;
-        // Display the FAQ
+
         FAQSection currentSection = null;
 
-        FAQSection parentSection = null;
+        FAQSection parentSection;
 
         User user = sc.getCurrentUser();
 
         String email = null;
-// Check if the current user is authenticated
+
         if (user instanceof AuthenticatedUser){
             email = ((AuthenticatedUser) user).getEmail();
         }
-         // Prompt the user for their email if they are not authenticated
+
         while (!(currentSection == null && optionNo == -1)){
 
             if (currentSection == null){
@@ -52,24 +52,23 @@ public class InquirerController extends Controller{
                 view.displayFAQSection(currentSection,true);
 
                 parentSection = currentSection.getParent();
-//              view.displayInfo("[-1] to return to main menu");
+
                 if (parentSection == null){
                     view.displayInfo("[-1] to return to main menu");
                 }
-                // Display the parent topic if the current section has a parent
                 else {
                     String parentTopic = parentSection.getTopic();
                     view.displayInfo("[-1] to return to " + parentTopic);
                 }
-//              view.displayInfo("[-1] to return to main menu");
+
                 if (user instanceof Guest){
                     view.displayInfo("[-2] to request updates for this topic");
                     view.displayInfo("[-3] to stop receiving updates for this topic");
                 }
-                // If the user is authenticated, display the option to register for updates
                 else {
                     String topic = currentSection.getTopic();
-//                  view.displayInfo("[-2] to request updates for this topic");
+                    Collection<String> subscribers = sc.usersSubscribedToFAQTopic(topic);
+
                     if (sc.registerForFAQUpdates(topic, email)){
                         view.displayInfo("[-2] to stop receiving updates for this topic");
                     }
@@ -79,17 +78,17 @@ public class InquirerController extends Controller{
                 }
 
             }
-//          view.displayInfo("[-1] to return to main menu");
+
             String selection = view.getInputString("Please choose an option: ");
 
-
+try{
             if (selection.matches("-?\\d+")){
 
                 optionNo = Integer.parseInt(selection);
-//              view.displayInfo("[-1] to return to main menu");
+
                 if (optionNo != -1 && optionNo != -2 && optionNo != -3) {
 
-                    ArrayList sections;
+                    ArrayList<FAQSection> sections;
 
                     if (currentSection == null){
                         FAQ faq = sc.getFAQ();
@@ -101,27 +100,26 @@ public class InquirerController extends Controller{
                     }
 
                     if (optionNo >= 0 && optionNo < sections.size()){
-                        currentSection = (FAQSection) new ArrayList<>(sections).get(optionNo);
-                        //  parentSection = currentSection.getParent();
+                        currentSection =  new ArrayList<>(sections).get(optionNo -1);
+
                     }
                     else {
                         view.displayError("Invalid option: " + selection);
                     }
 
                 }
-                
                 else if (currentSection != null){
                     String topic = currentSection.getTopic();
-//                  view.displayInfo("[-1] to return to main menu");
+
                     if (email == null && optionNo == -2){
                         requestFAQUpdates(email,topic);
                     }
                     else if (email == null && optionNo == -3){
                         stopFAQUpdates(email, topic);
                     }
-                    // If the user is authenticated, register or unregister for updates
-                    else if (optionNo == -2){
-
+                    else if ( email != null  && optionNo == -2 ){
+                        Collection<String> subscribers = sc.usersSubscribedToFAQTopic(topic);
+                        email = ((AuthenticatedUser)user ).getEmail();
                         if (sc.registerForFAQUpdates(topic, email)){
                             stopFAQUpdates(email, topic );
                         }
@@ -130,26 +128,22 @@ public class InquirerController extends Controller{
                         }
 
                     }
-                
-                    else {
-                        FAQSection parent = currentSection.getParent();
-                        currentSection = parent;
+                    else if (optionNo == -1) {
+                        parentSection = currentSection.getParent();
+                        currentSection = parentSection;
                         optionNo = 0;
                     }
                 }
 
-
             }
-            else {
-                view.displayError("Invalid option: " + selection);
-                optionNo = -1;
-            }
-
-
+}
+catch (NumberFormatException e) {
+    // Handle the case where the input is not a valid integer
+    view.displayError("Invalid option " + selection);
+    optionNo = -1;
+}
 
         }
-
-
 
     }
 
@@ -160,7 +154,7 @@ public class InquirerController extends Controller{
         // Prompt the user for a search query
         String searchQuery = view.getInputString("Enter your search query: ");
 
-        // Retrieve all pages available in the shared context
+        // Initialize the availablePages map to ensure it's not null
         Map<String, Page> availablePages = new HashMap<>(sc.getPages());
 
         // Check the current user's access rights
