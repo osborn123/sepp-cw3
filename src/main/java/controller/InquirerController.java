@@ -27,7 +27,7 @@ public class InquirerController extends Controller{
     public void consultFAQ(){
 
         int optionNo = 0;
-
+        // Display the FAQ
         FAQSection currentSection = null;
 
         FAQSection parentSection = null;
@@ -35,11 +35,11 @@ public class InquirerController extends Controller{
         User user = sc.getCurrentUser();
 
         String email = null;
-
+// Check if the current user is authenticated
         if (user instanceof AuthenticatedUser){
             email = ((AuthenticatedUser) user).getEmail();
         }
-
+         // Prompt the user for their email if they are not authenticated
         while (!(currentSection == null && optionNo == -1)){
 
             if (currentSection == null){
@@ -52,22 +52,24 @@ public class InquirerController extends Controller{
                 view.displayFAQSection(currentSection,true);
 
                 parentSection = currentSection.getParent();
-
+//              view.displayInfo("[-1] to return to main menu");
                 if (parentSection == null){
                     view.displayInfo("[-1] to return to main menu");
                 }
+                // Display the parent topic if the current section has a parent
                 else {
                     String parentTopic = parentSection.getTopic();
                     view.displayInfo("[-1] to return to " + parentTopic);
                 }
-
+//              view.displayInfo("[-1] to return to main menu");
                 if (user instanceof Guest){
                     view.displayInfo("[-2] to request updates for this topic");
                     view.displayInfo("[-3] to stop receiving updates for this topic");
                 }
+                // If the user is authenticated, display the option to register for updates
                 else {
                     String topic = currentSection.getTopic();
-
+//                  view.displayInfo("[-2] to request updates for this topic");
                     if (sc.registerForFAQUpdates(topic, email)){
                         view.displayInfo("[-2] to stop receiving updates for this topic");
                     }
@@ -77,18 +79,18 @@ public class InquirerController extends Controller{
                 }
 
             }
-
+//          view.displayInfo("[-1] to return to main menu");
             String selection = view.getInputString("Please choose an option: ");
 
 
             if (selection.matches("-?\\d+")){
 
                 optionNo = Integer.parseInt(selection);
-
+//              view.displayInfo("[-1] to return to main menu");
                 if (optionNo != -1 && optionNo != -2 && optionNo != -3) {
 
                     ArrayList sections;
-
+//                view.displayInfo("[-1] to return to main menu");
                     if (currentSection == null){
                         FAQ faq = sc.getFAQ();
                         sections = (ArrayList) faq.getSections();
@@ -97,7 +99,7 @@ public class InquirerController extends Controller{
                     else{
                         sections = (ArrayList) currentSection.getSubsections();
                     }
-
+//                view.displayInfo("[-1] to return to main menu");
                     if (optionNo >= 0 && optionNo < sections.size()){
                         currentSection = (FAQSection) new ArrayList<>(sections).get(optionNo);
                         //  parentSection = currentSection.getParent();
@@ -107,15 +109,17 @@ public class InquirerController extends Controller{
                     }
 
                 }
+                
                 else if (currentSection != null){
                     String topic = currentSection.getTopic();
-
+//                  view.displayInfo("[-1] to return to main menu");
                     if (email == null && optionNo == -2){
                         requestFAQUpdates(email,topic);
                     }
                     else if (email == null && optionNo == -3){
                         stopFAQUpdates(email, topic);
                     }
+                    // If the user is authenticated, register or unregister for updates
                     else if (optionNo == -2){
 
                         if (sc.registerForFAQUpdates(topic, email)){
@@ -126,6 +130,7 @@ public class InquirerController extends Controller{
                         }
 
                     }
+                
                     else {
                         FAQSection parent = currentSection.getParent();
                         currentSection = parent;
