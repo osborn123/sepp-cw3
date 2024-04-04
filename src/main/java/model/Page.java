@@ -12,11 +12,12 @@ public class Page {
         this.isPrivate = isPrivate;
 
     }
+    // Getters and setters
 
     public boolean isPrivate() {
         return isPrivate;
     }
-
+// Getters and setters
     public void setPrivate(boolean private_bool) {
         isPrivate = private_bool;
     }

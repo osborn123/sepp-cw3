@@ -13,12 +13,15 @@ public class AuthenticatedUser extends User {
         this.email = email;
         this.role = role;
     }
+    // Getters and setters
     public String getRole() {
         return role;
     }
+    // Getters and setters
     public String getEmail() {
         return email;
     }
+    // Getters and setters
     public void setEmail(String role) {
         this.email = email;
     }

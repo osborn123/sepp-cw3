@@ -85,7 +85,7 @@ public class TextUserInterface implements View {
      */
     @Override
     public void displayError(String message) {
-        System.out.println("Error: " + message);
+        System.err.println("Error: " + message);
     }
 
     /**
@@ -121,7 +121,7 @@ public class TextUserInterface implements View {
             displayFAQSection(section, expanded);
         }
 
-        if (expanded) {
+        if (!expanded) {
             pauseExecution();
         }
     }

@@ -9,6 +9,7 @@ public class SharedContext {
     public ArrayList<Inquiry> getInquiries() {
         return inquiries;
     }
+    public FAQ faq;
     private ArrayList<Inquiry> inquiries = new ArrayList<>();
     public static String ADMIN_STAFF_EMAIL = "admins@hindeburg.ac.uk";
     public static String getAdminStaffEmail() {
@@ -23,6 +24,7 @@ public class SharedContext {
     public SharedContext() {
         faqTopicsUpdateSubscribers = new HashMap<>();
         User currentUser = new Guest();
+        faq = new FAQ();
     }
     public void addPage(Page page){
 
@@ -66,7 +68,7 @@ public class SharedContext {
     
     public FAQ getFAQ() {
         // Return the FAQ object
-        return new FAQ();
+        return faq;
     }
 
     public void setFAQ(FAQ faq) {
