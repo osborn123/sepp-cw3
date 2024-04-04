@@ -90,7 +90,7 @@ public class InquirerController extends Controller{
                 if (optionNo != -1 && optionNo != -2 && optionNo != -3) {
 
                     ArrayList sections;
-//                view.displayInfo("[-1] to return to main menu");
+
                     if (currentSection == null){
                         FAQ faq = sc.getFAQ();
                         sections = (ArrayList) faq.getSections();
@@ -99,7 +99,7 @@ public class InquirerController extends Controller{
                     else{
                         sections = (ArrayList) currentSection.getSubsections();
                     }
-//                view.displayInfo("[-1] to return to main menu");
+
                     if (optionNo >= 0 && optionNo < sections.size()){
                         currentSection = (FAQSection) new ArrayList<>(sections).get(optionNo);
                         //  parentSection = currentSection.getParent();
