@@ -67,9 +67,9 @@ public class MenuController extends Controller {
         if (currentUser instanceof model.Guest) {
             // Handle the guest main menu options
             res = handleGuestMainMenu();
-        } else if (currentUser instanceof AuthenticatedUser authenticatedUser) {
+        } else if (currentUser instanceof AuthenticatedUser) {
             // Cast the current user to AuthenticatedUser for role checking
-            String role = authenticatedUser.getRole();
+            String role = currentUser.getRole();
 
             // Handle main menu options based on the user's role
             if ("Student".equals(role)) {
@@ -153,6 +153,7 @@ public class MenuController extends Controller {
         return true;
     }
     private boolean handleAdminStaffMainMenu() {
+        // Display admin staff main menu options and capture the selected option
         int selectedOption = adminStaffController.selectFromMenu(List.of(AdminStaffMainMenuOption.values()), "Please select an option from the above list: ");
         switch (selectedOption) {
             case -1: return false; // Exit
