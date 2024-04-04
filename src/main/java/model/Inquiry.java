@@ -36,7 +36,9 @@ public class Inquiry {
     private String assignedTo;
     private SharedContext sharedContext;
     private View view;
+   
 
+  
     public Inquiry(String subject, String content, String inquirerEmail){
         this.createdAt = LocalDateTime.now(); //Contigent on localdatetime being the datatype
         this.subject = subject;
@@ -44,5 +46,10 @@ public class Inquiry {
         this.inquirerEmail = inquirerEmail;
         this.assignedTo = null;
     }
-}
+
+    public Object getCreatedAt() {
+        return this.createdAt;
+    }
+    }
+
 
