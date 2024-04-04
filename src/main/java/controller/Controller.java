@@ -14,15 +14,17 @@ abstract class Controller {
     public EmailService es;
     public AuthenticationService as;
 
-    protected Controller(SharedContext sc, View view, AuthenticationService as, EmailService es){
+    protected Controller(SharedContext sc, View view, AuthenticationService as, EmailService es) {
         this.sc = sc;
         this.view = view;
         this.as = as;
         this.es = es;
     }
+
     public void setMenuController(MenuController menuController) {
         this.mc = menuController;
     }
+
     protected <T> int selectFromMenu(Collection<T> menuItems, String prompt) {
         view.displayDivider();
 
@@ -54,5 +56,6 @@ abstract class Controller {
         view.displayDivider();
         return selection;
     }
+
 
 }

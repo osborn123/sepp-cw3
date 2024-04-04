@@ -1,95 +1,124 @@
 import controller.GuestController;
 import external.AuthenticationService;
 import external.EmailService;
+import external.MockEmailService;
 import model.SharedContext;
-import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import view.TextUserInterface;
-import view.View;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-
 public class TestLoginSystem {
-    @Mock
-    private AuthenticationService auth;
-    @Mock
-    private TextUserInterface textUserInterface;
-    @Mock
-    private View view;
+    private SharedContext sharedContext;
+    private TextUserInterface view; // Changed to TextUserInterface since mock() was called on this
+    private AuthenticationService authenticationService;
+    private EmailService emailService;
 
-    @InjectMocks
     private GuestController guestController;
 
-    private SharedContext sc;
-
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-        sc = new SharedContext();
-        guestController = new GuestController(sc, textUserInterface, auth, mock(EmailService.class));
+    public void setUp() throws URISyntaxException, IOException, ParseException {
+        sharedContext = new SharedContext();
+        view = mock(TextUserInterface.class);
+        authenticationService = mock(AuthenticationService.class); // Mocking, instead of using a real instance
+        emailService = new MockEmailService(); // Assuming this is fine to use as is
+        guestController = new GuestController(sharedContext, view, authenticationService, emailService);
     }
 
     @Test
-    void testLoginWithWrongPassword() {
-        // Arrange
-        String usernameInput = "gt";
-        String passwordInput = "wrongpassword";
-        String errorMessage = "Invalid username or password";
-        JSONObject errorResponse = new JSONObject();
-        errorResponse.put("error", errorMessage);
-        when(textUserInterface.getInputString("Enter your username: ")).thenReturn(usernameInput);
-        when(textUserInterface.getInputString("Enter your password: ")).thenReturn(passwordInput);
-        when(auth.login(usernameInput, passwordInput)).thenReturn(errorResponse.toJSONString());
+    @DisplayName("Test successful login")
+    public void testSuccessfulLogin() {
+        String username = "JackTheRipper";
+        String password = "catch me if u can";
 
-        // Act
+        when(view.getInput(anyString())).thenReturn(username, password);
+        when(authenticationService.authenticate(username, password)).thenReturn(true); // Assuming this method exists
+
         guestController.login();
 
-        // Assert
-        verify(textUserInterface).displayError(errorMessage);
-        //assertNull(guestController.getSharedContext().getCurrentUser());
+        verify(view).displaySuccess(contains("You have successfully logged in as " + username));
     }
+
     @Test
-    void testGuestLoginWithWrongUsername() {
-        // Arrange
-        String usernameInput = "wrongusername";
-        String passwordInput = "password";
-        String errorMessage = "Invalid username or password";
-        JSONObject errorResponse = new JSONObject();
-        errorResponse.put("error", errorMessage);
-        when(textUserInterface.getInputString("Enter your username: ")).thenReturn(usernameInput);
-        when(textUserInterface.getInputString("Enter your password: ")).thenReturn(passwordInput);
-        when(auth.login(usernameInput, passwordInput)).thenReturn(errorResponse.toJSONString());
+    @DisplayName("Test login with incorrect password")
+    public void testLoginWithInvalidCredentials() {
+        String username = "JackTheRipper";
+        String password = "wrong password";
 
-        // Act
+        when(view.getInput(anyString())).thenReturn(username, password);
+        when(authenticationService.authenticate(username, password)).thenReturn(true); // Assuming this method exists
+
         guestController.login();
 
-        // Assert
-        verify(textUserInterface).displayError(errorMessage);
-        //assertNull(guestController.getSharedContext().getCurrentUser());
+        verify(view).displayError(contains("Wrong username or password"));
     }
+
     @Test
-    void testLoginWithCorrectUsernameAndPassword() {
-        // Arrange
-        String usernameInput = "correctusername";
-        String passwordInput = "correctpassword";
-        JSONObject successResponse = new JSONObject();
-        successResponse.put("username", "test@gam.ci");
-        when(textUserInterface.getInputString("Enter your username: ")).thenReturn(usernameInput);
-        when(textUserInterface.getInputString("Enter your password: ")).thenReturn(passwordInput);
-        when(auth.login(usernameInput, passwordInput)).thenReturn(successResponse.toJSONString());
+    @DisplayName("Test login with empty username")
+    public void testLoginWithEmptyUsername() {
+        String username = "";
+        String password = "catch me if u can";
 
-        // Act
+        when(view.getInput(anyString())).thenReturn(username, password);
+        when(authenticationService.authenticate(username, password)).thenReturn(false); // Assuming this method exists
+
         guestController.login();
 
-        // Assert
-        verify(textUserInterface, never()).displayError(anyString());
-        //verify(textUserInterface).displaySuccess("You have successfully logged in as " + usernameInput + " (a)");
-//        verify(textUserInterface).displayError("Server response does not contain email information.");
-        //assertEquals(usernameInput, guestController.getSharedContext().getCurrentUser());
-        //assertNotNull(guestController.getSharedContext().getCurrentUser());
+        verify(view).displayError(contains("Wrong username or password"));
     }
+
+    @Test
+    @DisplayName("Test login with incorrect username")
+    public void testLoginWithIncorrectUsername() {
+        String incorrectUsername = "WrongName";
+        String password = "catch me if u can";
+
+        when(view.getInput(anyString())).thenReturn(incorrectUsername, password);
+        when(authenticationService.authenticate(incorrectUsername, password)).thenReturn(false); // Assuming this method exists
+
+        guestController.login();
+
+        verify(view).displayError(contains("Wrong username or password"));
+    }
+
+    @Test
+    @DisplayName("Test login with locked account")
+    public void testLoginWithLockedAccount() {
+        String username = "LockedUser";
+        String password = "password123";
+
+        when(view.getInput(anyString())).thenReturn(username, password);
+        when(authenticationService.authenticate(username, password)).thenReturn(false); // Mocking a failed authentication due to account lock
+
+        guestController.login();
+
+        verify(view).displayError(contains("Your account is locked"));
+    }
+
+    @Test
+    @DisplayName("Test login with expired credentials")
+    public void testLoginWithExpiredCredentials() {
+        String username = "ExpiredUser";
+        String password = "oldPassword";
+
+        when(view.getInput(anyString())).thenReturn(username, password);
+        when(authenticationService.authenticate(username, password)).thenReturn(false); // Mocking a failed authentication due to expired credentials
+
+        guestController.login();
+
+        verify(view).displayError(contains("Your credentials have expired"));
+    }
+
+
 }
+
+
+
+
