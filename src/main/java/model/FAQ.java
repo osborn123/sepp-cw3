@@ -1,7 +1,6 @@
 package model;
 
 
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +9,8 @@ public class FAQ {
     public FAQ() {
         this.sections = new HashMap<>();
     }
+
+
 
     public void addSectionItems(String topic, Map<String, String> items) {
         FAQSection section = new FAQSection(topic);

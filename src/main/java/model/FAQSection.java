@@ -1,7 +1,11 @@
 package model;
 
+import org.apache.lucene.queries.CommonTermsQuery;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
 
 /**
  * Represents a section of a Frequently Asked Questions (FAQ) list.
@@ -10,8 +14,13 @@ import java.util.Collection;
 public class FAQSection {
     private String topic; // The title or main topic of this FAQ section.
     private FAQSection parent; // The parent section, null if this is a top-level section.
-    private Collection<FAQItem> items; // The list of FAQ items (questions and answers) in this section.
-    private Collection<FAQSection> subsections; // Nested subsections within this FAQ section.
+    private List<FAQItem> items; // The list of FAQ items (questions and answers) in this section.
+    private List<FAQSection> subsections; // Nested subsections within this FAQ section.
+
+    private List<FAQSection> sections = new ArrayList<>();
+
+    private CommonTermsQuery faqItems;
+
 
     /**
      * Constructs an FAQSection with a specified topic.
@@ -23,6 +32,8 @@ public class FAQSection {
         this.items = new ArrayList<>();
         this.subsections = new ArrayList<>();
         this.parent = null; // Initially, there is no parent until this section is added as a subsection.
+        this.faqItems = new ArrayList<>();
+
     }
 
     /**
@@ -54,6 +65,9 @@ public class FAQSection {
         items.add(new FAQItem(question, answer));
     }
 
+
+
+
     // Standard getters for the class properties.
     public String getTopic() { return topic; }
     public Collection<FAQItem> getItems() { return items; }
@@ -84,5 +98,15 @@ public class FAQSection {
             }
         }
         return sb.toString();
+    }
+
+
+
+    public List<FAQSection> getSections() {
+        return sections;
+    }
+
+    public void addItem(FAQItem faqItem) {
+        this.faqItems.add(faqItem);
     }
 }

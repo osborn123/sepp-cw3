@@ -198,9 +198,19 @@ public class TextUserInterface implements View {
         return false;
     }
 
-    public Object getInput(String prompt) {
+    public String getInput(String prompt) {
         System.out.println(prompt); // Print the prompt to the user
         Scanner scanner = new Scanner(System.in); // Create a Scanner object for input
         return scanner.nextLine(); // Return the input string
+    }
+
+    @Override
+    public void displayFAQsection(Class<? extends Collection> section) {
+
+    }
+
+    @Override
+    public void displayString(String message) {
+
     }
 }

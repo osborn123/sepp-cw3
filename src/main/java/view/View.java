@@ -23,4 +23,12 @@ public interface View {
 
 
     boolean getYesNoInputs(String message);
+
+    String getInput(String prompt);
+
+
+    void displayFAQsection(Class<? extends Collection> section);
+
+    void displayString(String message);
 }
+
