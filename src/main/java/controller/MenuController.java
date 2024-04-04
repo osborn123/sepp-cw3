@@ -67,9 +67,8 @@ public class MenuController extends Controller {
         if (currentUser instanceof model.Guest) {
             // Handle the guest main menu options
             res = handleGuestMainMenu();
-        } else if (currentUser instanceof AuthenticatedUser) {
+        } else if (currentUser instanceof AuthenticatedUser authenticatedUser) {
             // Cast the current user to AuthenticatedUser for role checking
-            AuthenticatedUser authenticatedUser = (AuthenticatedUser) currentUser;
             String role = authenticatedUser.getRole();
 
             // Handle main menu options based on the user's role
