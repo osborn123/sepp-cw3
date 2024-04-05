@@ -9,7 +9,7 @@ public class SharedContext {
     public ArrayList<Inquiry> getInquiries() {
         return inquiries;
     }
-    public FAQ faq;
+    
     private ArrayList<Inquiry> inquiries = new ArrayList<>();
     public static String ADMIN_STAFF_EMAIL = "admins@hindeburg.ac.uk";
     public static String getAdminStaffEmail() {
