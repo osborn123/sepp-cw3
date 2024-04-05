@@ -1,5 +1,10 @@
 package model;
 
+// Represents an item in the FAQ, which contains a question and an answer.
+
+/**
+ * Represents an item in the FAQ, which contains a question and an answer.
+ */
 
 public class FAQItem {
     // The question part of the FAQ item
