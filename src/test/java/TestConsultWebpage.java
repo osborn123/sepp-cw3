@@ -15,7 +15,7 @@ public class TestConsultWebpage {
     }
 
     @Test
-    @DisplayName("Test Content Retrival of Page")
+    @DisplayName("Test Content Retrieval of Page")
     public void testContentRetrieval() {
         String content = "This is a test content.";
         Page page = new Page("Test Title", content, false);
@@ -23,7 +23,7 @@ public class TestConsultWebpage {
     }
 
     @Test
-    @DisplayName("Test Title Retrival of Page")
+    @DisplayName("Test Title Retrieval of Page")
     public void testTitleRetrieval() {
         String title = "Test Title";
         Page page = new Page(title, "Test Content", false);

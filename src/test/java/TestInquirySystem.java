@@ -1,10 +1,10 @@
 import model.Inquiry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDateTime;
 
 public class TestInquirySystem {
 
@@ -22,6 +22,7 @@ public class TestInquirySystem {
     }
 
     @Test
+    @DisplayName("Test Inquiry Creation and Details Retrieval")
     public void testInquiryCreation() {
         // Check that the inquiry has been created with the correct details
         assertEquals(testSubject, inquiry.getSubject());
@@ -32,6 +33,7 @@ public class TestInquirySystem {
     }
 
     @Test
+    @DisplayName("Test Inquiry Assigning to Staff")
     public void testAssignInquiryToStaff() {
         // Assign the inquiry to a staff member and test
         inquiry.setAssignedTo(testAssignedStaff);

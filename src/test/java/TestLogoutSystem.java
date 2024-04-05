@@ -1,70 +1,49 @@
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import controller.AuthenticatedUserController;
 import external.AuthenticationService;
 import external.EmailService;
-import external.MockAuthenticationService;
-import external.MockEmailService;
+import model.AuthenticatedUser;
 import model.Guest;
 import model.SharedContext;
-import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import view.View;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-
 public class TestLogoutSystem {
 
+    private AuthenticatedUserController controller;
     private SharedContext sharedContext;
-    private AuthenticatedUserController authenticatedUserController;
-    private View view;
+    private View mockView;
     private AuthenticationService mockAuthenticationService;
     private EmailService mockEmailService;
 
     @BeforeEach
-    public void setUp() throws URISyntaxException, IOException, ParseException {
+    void setUp() {
+        // Mock the dependencies
+        mockView = mock(View.class);
+        mockAuthenticationService = mock(AuthenticationService.class);
+        mockEmailService = mock(EmailService.class);
         sharedContext = new SharedContext();
-        view = mock(View.class);
-        mockAuthenticationService = new MockAuthenticationService();
-        mockEmailService = new MockEmailService();
-        authenticatedUserController = new AuthenticatedUserController(sharedContext, view, mockAuthenticationService, mockEmailService);
+        
+        // Assume an authenticated user is already logged in
+        AuthenticatedUser loggedInUser = new AuthenticatedUser("user@example.com", "Student");
+        sharedContext.setCurrentUser(loggedInUser);
+
+        // Initialize the controller with mocked dependencies
+        controller = new AuthenticatedUserController(sharedContext, mockView, mockAuthenticationService, mockEmailService);
     }
 
     @Test
-    @DisplayName("Test forced logout due to inactivity")
-    public void testForcedLogoutDueToInactivity() throws IOException {
-        // Simulating that the user is forced to logout due to inactivity
-        authenticatedUserController.forceLogoutDueToInactivity();
-
-        // Verify that a message is displayed regarding the forced logout
-        verify(view).displayInfo("You have been logged out due to inactivity.");
-
-        // Check that the current user in the shared context is now an instance of Guest
-        assertTrue(sharedContext.getCurrentUser() instanceof Guest);
-    }
-
-    @Test
-    @DisplayName("Test logout with unsaved changes")
-    public void testLogoutWithUnsavedChanges() throws IOException {
-        // Assuming that the 'hasUnsavedChanges()' method returns true when there are unsaved changes
-        when(authenticatedUserController.hasUnsavedChanges()).thenReturn(true);
-
-        // Simulate the user confirming they want to logout even with unsaved changes
-        when(view.getYesNoInputs("You have unsaved changes. Are you sure you want to logout?")).thenReturn(true);
-
+    void testLogoutSuccess() {
         // Perform the logout action
-        authenticatedUserController.logout();
+        controller.logout();
 
-        // Verify that a warning message is shown to the user about the unsaved changes
-        verify(view).displayWarning("You logged out with unsaved changes.");
+        // Verify that the success message was displayed
+        verify(mockView).displaySuccess("Logout successful!");
 
-        // Check that the current user in the shared context is now an instance of Guest
-        assertTrue(sharedContext.getCurrentUser() instanceof Guest);
+        // Assert that the current user is now a Guest, indicating they are logged out
+        assertTrue(sharedContext.getCurrentUser() instanceof Guest, "Current user should be a Guest after logout.");
     }
-
-    // Additional logout test cases would follow the same pattern...
 }

@@ -44,8 +44,8 @@ public class TestBrowseFAQ {
         FAQSection section3 = new FAQSection("Topic 3");
         section1.addSubsection(section3);
 
-        sharedContext.getFAQ().getSections().get(section1);
-        sharedContext.getFAQ().getSections().get(section2);
+        sharedContext.getFAQ().getSections().get("Topic 1");
+        sharedContext.getFAQ().getSections().get("Topic 2");
     }
     @Test
     @DisplayName("Test navigating to a sub sub-section and back")
