@@ -110,13 +110,13 @@ public class TextUserInterface implements View {
      * Displays FAQ information. If expanded is true, it also pauses execution to allow the user
      * to read the FAQ content before continuing.
      *
-     * @param faq The FAQ to be displayed.
-     * @param expanded If true, pause execution after displaying the FAQ.
+     * @param faq      The FAQ to be displayed.
      */
-    public void displayFAQ(FAQ faq, boolean expanded) {
+    public void displayFAQ(FAQ faq) {
         System.out.println("FAQ sections: ");
         System.out.println();
 
+        boolean expanded = false;
         for (FAQSection section : faq.getSections().values()) {
             displayFAQSection(section, expanded);
         }

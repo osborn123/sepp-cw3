@@ -38,7 +38,7 @@ public class TestLoginSystem {
         String username = "JackTheRipper";
         String password = "catch me if u can";
 
-        when(view.getInput(anyString())).thenReturn(username).thenReturn(password);
+        when(view.getInput(anyString())).thenReturn("some input");;
         when(authenticationService.authenticate(username, password)).thenReturn(true); // Assuming this method exists
 
         guestController.login();

@@ -16,7 +16,7 @@ public interface View {
     public void displayError(String str);
     public void displayException(String str);
     public void displayDivider();
-    public void displayFAQ(FAQ faq, boolean bool);
+    public void displayFAQ(FAQ faq);
     public void displayFAQSection(FAQSection faqSection, boolean bool);
     public void displayInquiry(Inquiry inquiry);
     public void displaySearchResults(Collection<PageSearchResult> pageSearchResultCollection);

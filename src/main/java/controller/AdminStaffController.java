@@ -2,20 +2,17 @@ package controller;
 
 import external.AuthenticationService;
 import external.EmailService;
-import external.MockEmailService;
 import model.*;
 import view.View;
 
 
 import java.io.IOException;
-import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLOutput;
 import java.util.*;
 
 public class AdminStaffController extends StaffController{
@@ -144,7 +141,7 @@ public class AdminStaffController extends StaffController{
             if (!faq.getSections().isEmpty()) {
                 if (currentSection == null) {
                     //display FAQ and option
-                    view.displayFAQ(faq, false);
+                    view.displayFAQ(faq);
                     view.displayInfo("[-1] to return to main menu ");
                 } else {
                     view.displayFAQSection(currentSection, false);

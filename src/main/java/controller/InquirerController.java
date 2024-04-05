@@ -43,7 +43,7 @@ public class InquirerController extends Controller{
 
             if (currentSection == null){
                 FAQ faq = sc.getFAQ();
-                view.displayFAQ(faq,true);
+                view.displayFAQ(faq);
                 view.displayInfo("[-1] to return to main menu");
 
             }
