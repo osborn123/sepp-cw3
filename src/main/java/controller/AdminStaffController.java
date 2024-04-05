@@ -103,7 +103,7 @@ public class AdminStaffController extends StaffController{
             int status = es.sendEmail(senderEmail, SharedContext.getAdminStaffEmail(), newPage.getTitle(), newPage.getContent());
 
 // Check the status of the email send operation and display appropriate feedback
-            if (status == es.STATUS_SUCCESS){
+            if (status == EmailService.STATUS_SUCCESS){
                 // If the email was sent successfully, notify the user of the successful addition
                 view.displaySuccess("Added page " + title + " and email notification sent.");
             } else {
@@ -135,13 +135,12 @@ public class AdminStaffController extends StaffController{
         while (!(currentSection == null && optionNo == -1)) {
             if (!faq.getSections().isEmpty()) {
                 if (currentSection == null) {
-<<<<<<< HEAD
+
                     //display FAQ and option
                     view.displayFAQ(faq);
-=======
 
-                    view.displayFAQ(faq,true);
->>>>>>> e11dfa8c35b8165235dd7cd14e44080df38f41b9
+                    view.displayFAQ(faq);
+
                     view.displayInfo("[-1] to return to main menu ");
                 } else {
                     view.displayFAQSection(currentSection,true);
@@ -213,6 +212,7 @@ public class AdminStaffController extends StaffController{
                                         Map<String, String> items = new HashMap<>();
                                         items.put(question, answer);
                                         faq.addSectionItems(newSection, items);
+                                        notifySubscribers(newSection, question, answer);
                                         view.displayInfo("The question has been added to the new section.");
                                     }
                                 } else {
@@ -328,6 +328,7 @@ public class AdminStaffController extends StaffController{
                 Map<String, String> items = new HashMap<>();
                 items.put(question, answer);
                 faq.addSectionItems(sectionName, items);
+                notifySubscribers(sectionName, question, answer); // Notify subscribers about the new FAQ item.
                 view.displaySuccess("New section created and FAQ item added successfully to: " + sectionName);
             } else {
                 // Operation cancelled by the user
@@ -502,4 +503,3 @@ public class AdminStaffController extends StaffController{
     }
 
 }
-

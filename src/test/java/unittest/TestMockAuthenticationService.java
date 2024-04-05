@@ -1,3 +1,5 @@
+package unittest;
+
 import external.MockAuthenticationService;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
