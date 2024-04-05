@@ -1,3 +1,5 @@
+package systemtest;
+
 import model.Inquiry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

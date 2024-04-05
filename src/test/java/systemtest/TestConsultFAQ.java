@@ -1,3 +1,5 @@
+package systemtest;
+
 import model.FAQ;
 import model.FAQSection;
 import org.junit.jupiter.api.BeforeEach;
